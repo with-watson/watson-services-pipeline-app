@@ -1,0 +1,23 @@
+{
+    "ASSISTANT_USERNAME": { "expr": "Conversation.*", "field": "credentials.username" },
+    "ASSISTANT_PASSWORD": { "expr": "Conversation.*", "field": "credentials.password" },
+    "ASSISTANT_WORKSPACE_ID": "",
+    "DISCOVERY_USERNAME": { "expr": "Discovery.*", "field": "credentials.username" },
+    "DISCOVERY_PASSWORD": { "expr": "Discovery.*", "field": "credentials.password" },
+    "DISCOVERY_ENVIRONMENT_ID": "system",
+    "DISCOVERY_COLLECTION_ID": "news-en",
+    "NLU_USERNAME": { "expr": "Natural Language Understanding.*", "field": "credentials.username" },
+    "NLU_PASSWORD": { "expr": "Natural Language Understanding.*", "field": "credentials.password" },
+    "NLC_USERNAME": { "expr": "Natural Language Classifier.*", "field": "credentials.username" },
+    "NLC_PASSWORD": { "expr": "Natural Language Classifier.*", "field": "credentials.password" },
+    "WATSON_TONE_USERNAME": { "expr": "Tone Analyzer.*", "field": "credentials.username" },
+    "WATSON_TONE_PASSWORD": { "expr": "Tone Analyzer.*", "field": "credentials.password" },
+    "WATSON_VR_API_KEY": "",
+    "WATSON_STT_USERNAME": { "expr": "Speech to Text.*", "field": "credentials.username" },
+    "WATSON_STT_PASSWORD": { "expr": "Speech to Text.*", "field": "credentials.password" },
+    "WATSON_TTS_USERNAME": { "expr": "Text to Speech.*", "field": "credentials.username" },
+    "WATSON_TTS_PASSWORD": { "expr": "Text to Speech.*", "field": "credentials.password" },
+    "WATSON_PERSONALITY_USERNAME": { "expr": "Personality Insights.*", "field": "credentials.username" },
+    "WATSON_PERSONALITY_PASSWORD": { "expr": "Personality Insights.*", "field": "credentials.password" },
+    "WATSON_PERSONALITY_URL": { "expr": "Personality Insights.*", "field": "credentials.url" }
+}

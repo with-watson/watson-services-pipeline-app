@@ -1,0 +1,12 @@
+{
+    "speech_to_text": [
+        {
+            "credentials": {
+                "url": "https://stream.watsonplatform.net/speech-to-text/api",
+                "username": "",
+                "password": ""
+            },
+            "name": "Speech to Text-Training"
+        }
+    ]
+}

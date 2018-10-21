@@ -1,0 +1,27 @@
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Test HTTP Calls</h1>
+    <p class="lead">Test all the Authenticated HTTP calls from this client to the Loopback Server.</p>
+  </div>
+</div>
+<div class="container">
+  <div class="card m-2">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Call Type</th>
+          <th>Outcome</th>
+          <th>Response Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of results">
+          <td>{{r.callType}}</td>
+          <td>{{r.outcome}}</td>
+          <td>{{r.respTime}} mills</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <button class="btn btn-info pull-right" (click)="executeTest()">Rerun Test</button>
+</div>

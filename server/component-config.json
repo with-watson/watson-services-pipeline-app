@@ -1,0 +1,11 @@
+{
+  "loopback-component-explorer": {
+    "mountPath": "/explorer"
+  },
+  "./components/watson-assistant-component/watson-assistant-loader.js": {},
+  "./components/watson-discovery-component/watson-discovery-loader.js": {},
+  "./components/watson-nlc-component/watson-nlc-loader.js": {},
+  "./components/watson-nlu-component/watson-nlu-loader.js": {},
+  "./components/watson-personality-component/watson-personality-loader.js": {},
+  "./components/watson-stt-component/watson-stt-loader.js": {}
+}
