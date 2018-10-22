@@ -4,7 +4,7 @@ const winston = require('winston')
 
 const console = new winston.transports.Console()
 
-const DEFAULT_LEVEL = 'info'
+const DEFAULT_LEVEL = 'debug'
 
 var logger = function(level) {
 

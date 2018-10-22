@@ -3,5 +3,19 @@
     "name": "db",
     "connector": "memory",
     "file": "mem_db.json"
+  },
+  "ibm-cos": {
+    "name": "ibm-cos",
+    "connector": "loopback-component-storage",
+    "provider": "amazon",
+    "key": "${CLOUD_OBJECT_STORAGE_AWS_API_KEY}",
+    "keyId": "${CLOUD_OBJECT_STORAGE_AWS_API_KEY_ID}",
+    "endpoint": "${CLOUD_OBJECT_STORAGE_API_ENDPOINT}",
+    "maxFileSize": "${CLOUD_OBJECT_STORAGE_MAX_FILE_SIZE}"
+  },
+  "pipeline-db": {
+    "name": "pipeline-db",
+    "connector": "memory",
+    "file": "pipeline_db.json"
   }
 }

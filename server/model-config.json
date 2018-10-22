@@ -52,5 +52,17 @@
   "Role": {
     "dataSource": "db",
     "public": false
+  },
+  "IbmCos": {
+    "dataSource": "ibm-cos",
+    "public": false
+  },
+  "PipelineMapper": {
+    "dataSource": null,
+    "public": false
+  },
+  "PipelineSvcExample": {
+    "dataSource": null,
+    "public": false
   }
 }

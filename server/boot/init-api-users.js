@@ -10,6 +10,7 @@ module.exports = function (app, done) {
 
   var defaultUsers = [
       { username: 'watson', email: 'watson@ibm.com', password: 'p@ssw0rd' },
+      { username: 'callbackuser', email: 'callbackuser@ibm.com', password: 'p@ssw0rd' },
       { username: 'admin', email: 'admin@ibm.com', password: '@dm1n!', roles: [ 'admin' ] }
   ]
 

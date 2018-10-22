@@ -19,5 +19,6 @@ node_modules
 npm-debug.log
 dist
 mem_db.json
+pipeline_db.json
 vcap-local.json
 env-vars.json

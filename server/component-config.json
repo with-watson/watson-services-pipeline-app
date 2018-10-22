@@ -2,10 +2,43 @@
   "loopback-component-explorer": {
     "mountPath": "/explorer"
   },
-  "./components/watson-assistant-component/watson-assistant-loader.js": {},
-  "./components/watson-discovery-component/watson-discovery-loader.js": {},
-  "./components/watson-nlc-component/watson-nlc-loader.js": {},
-  "./components/watson-nlu-component/watson-nlu-loader.js": {},
-  "./components/watson-personality-component/watson-personality-loader.js": {},
-  "./components/watson-stt-component/watson-stt-loader.js": {}
+  "./components/pipeline-component/pipeline-component.js": {
+    "componentStorageModel": "IbmCos",
+    "instanceDataSource": "pipeline-db",
+    "pipelines": [
+      {
+        "name": "example-pipeline",
+        "bucket": "watson-service-pipeline-example",
+        "mapper": "PipelineMapper",
+        "steps": [
+          {
+            "description": "simple trigger",
+            "model": "Pipeline",
+            "method": "simpleTrigger"
+          },
+          {
+            "description": "sync call",
+            "model": "PipelineSvcExample",
+            "method": "syncCall"
+          },
+          {
+            "description": "async call",
+            "model": "PipelineSvcExample",
+            "method": "asyncCall"
+          },
+          {
+            "description": "get array of values",
+            "model": "PipelineSvcExample",
+            "method": "getArrayValues"
+          },
+          {
+            "description": "do something with each value in an array",
+            "model": "PipelineSvcExample",
+            "method": "processArrayValue",
+            "until": "allValuesProcessed"
+          }
+        ]
+      }
+    ]
+  }
 }

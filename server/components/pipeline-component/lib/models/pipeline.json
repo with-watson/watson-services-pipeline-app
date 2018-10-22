@@ -1,0 +1,180 @@
+{
+    "name": "Pipeline",
+    "description": "The Pipeline API is where you would interact with the pipeline from an external application.",
+    "plural": "Pipeline",
+    "base": "Model",
+    "idInjection": true,
+    "options": {
+        "validateUpsert": true
+    },
+    "properties": {},
+    "validations": [],
+    "relations": {},
+    "acls": [
+        {
+            "principalType": "ROLE",
+            "principalId": "$everyone",
+            "permission": "DENY",
+            "property": "*"
+        },
+        {
+            "principalType": "ROLE",
+            "principalId": "$authenticated",
+            "permission": "ALLOW",
+            "property": "*"
+        }
+    ],
+    "methods": {
+        "status": {
+            "description": "Returns the status of the specified pipeline instance.",
+            "accepts": [
+                {
+                    "arg": "id",
+                    "description": "The pipeline id that was returned when the pipeline instance was triggered.",
+                    "type": "string",
+                    "required": true
+                }
+            ],
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            }
+            
+        },
+        "outcome": {
+            "description": "Returns the outcome of the pipeline.  This is all the results in a single object.",
+            "accepts": [
+                {
+                    "arg": "id",
+                    "description": "The pipeline id that was returned when the pipeline instance was triggered.",
+                    "type": "string",
+                    "required": true
+                }
+            ],
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            }
+            
+        },
+        "retrieveObject": {
+            "description": "Download a file that was produced during the processing of the pipeline steps.",
+            "accepts": [
+                {
+                    "arg": "req",
+                    "type": "object",
+                    "http": {
+                        "source": "req"
+                    }
+                },
+                {
+                    "arg": "res",
+                    "type": "object",
+                    "http": {
+                        "source": "res"
+                    }
+                }
+            ],
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            }
+        },
+        "simpleTrigger": {
+            "description": "A simple trigger that only accepts a required parameter Pipeline Name.  Use this for testing or when you don't have a file to push.",
+            "accepts": [
+                {
+                    "arg": "triggerData",
+                    "description": "Trigger Data object that can either contain a PipelineName or an ID of an existing pipeline instance.",
+                    "type": "object",
+                    "http": {
+                        "source": "body"
+                    },
+                    "required": true
+                }
+            ],
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            }
+        },
+        "uploadTrigger": {
+            "description": "A trigger that needs to be acompanied with a file.  Use the file key in the uploaded form for the file.",
+            "accepts": [
+                {
+                    "arg": "req",
+                    "type": "object",
+                    "http": {
+                        "source": "req"
+                    }
+                },
+                {
+                    "arg": "res",
+                    "type": "object",
+                    "http": {
+                        "source": "res"
+                    }
+                }
+            ],
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            }
+        },
+        "urlTrigger": {
+            "description": "A trigger that will pass the URL field to the pipeline for processing.  Used to reference a resource on another cloud",
+            "accepts": [
+                {
+                    "arg": "trigger",
+                    "type": "object",
+                    "required": true,
+                    "http": {
+                        "source": "body"
+                    }
+                }
+            ],
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            }
+        },
+        "notify": {
+            "description": "Notify an executing pipeline that work is complete (callback).  Used for long running actions to call back to the pipeline.",
+            "accepts": {
+                "arg": "notification",
+                "description": "A wrapper that should contain the correlation information for the pipeline to match this call up to the pipeline instance.",
+                "type": "object",
+                "required": true,
+                "http": {
+                    "source": "body"
+                }
+            },
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            }
+        },
+        "resume": {
+            "description": "Restart a pipeline instance after it failed or if you want to rerun the pipeline from a specific step.",
+            "accepts": {
+                "arg": "resumeData",
+                "type": "object",
+                "http": {
+                    "source": "body"
+                }
+            },
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            }
+        }
+    }
+}
