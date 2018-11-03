@@ -1,6 +1,6 @@
 # Watson Services Pipeline
 
-Based on Node.js and Loopback and implement an enrichment pipeline.  This implementation is based on the Watson Strategic Partnerships Engineering Framework.
+A Pipeline framework based on Node.js and Loopback.  This implementation is based on the Watson Strategic Partnerships Engineering Framework.
 
 ## Setting up IBM Cloud
 
@@ -16,6 +16,8 @@ Based on Node.js and Loopback and implement an enrichment pipeline.  This implem
 
 ### Create the following services using the procedure below
 
+>You need some database that is supported by Loopback, doesn't have to be Cloudant
+
 - `Cloudant NoSql Database`
 
 1. Click on the Connect new button.
@@ -24,9 +26,19 @@ Based on Node.js and Loopback and implement an enrichment pipeline.  This implem
 4. Bind it to your application.
 5. Re-stage the application.
 
+### Create a database in Cloudant
+
+1. From the IBM Cloud Console, select the Cloudant Service Instance you created for this application.
+2. Launch the tooling to open the Cloudant Dashboard.
+3. Create a new database called `pipeline-db`.
+
+This database is required to keep the pipeline state in.
+
 ### Create and bind Cloud Object Storage
 
-CoS is a bit different than other services as it is account wide.  If you don't have an instance of Cloud Object Storage already provisioned, do so now.
+>Only required if you need Cloud Object Storage to process big files like audio or video
+
+CoS is a bit different than other services as it is account wide and part of IAM.  If you don't have an instance of Cloud Object Storage already provisioned, do so now.
 
 Due to the application requiring HMAC credentials, the binding must be done from the command line.
 
@@ -36,14 +48,6 @@ Due to the application requiring HMAC credentials, the binding must be done from
 - Now run the following command
 
 `bx resource service-binding-create [Cloud Object Storage Alias Name] [The application name] Writer -p '{"HMAC": true}'`
-
-### Create a database in Cloudant
-
-1. From the IBM Cloud Console, select the Cloudant Service Instance you created for this application.
-2. Launch the tooling to open the Cloudant Dashboard.
-3. Create a new database called `pipeline-db`.
-
-This database is required to keep the pipeline state in.
 
 ## Installing the dependencies
 
@@ -63,11 +67,13 @@ npm install
 
 To do that, the Prerequisites needs to be met and install must have been executed successfully.
 
-From the App folder, run the command `npm run build:client`.
+From the App folder, run the command `npm run build:client-prod`.
 
 This will build the code into a folder called dist that will contain 1 sub-folders.  If any error occurred, then the build wasn't successful and is probably a dependency issue or install that wasn't ran or successful.
 
 # Running the app on IBM Cloud
+
+> You need to have the bx or ibmcloud CLI installed locally before you can do this step.
 
 1. Push the app to IBM Cloud.
 
@@ -79,24 +85,52 @@ This will build the code into a folder called dist that will contain 1 sub-folde
 
 3. The application is secured with a username and password.  By default the credentials are username = watson and password = p@ssw0rd.
 
+4. To modify the list of users for this application, edit the file `server/boot/init-api-users.js` and modify the array of users.
+
 # Watson Service Configuration
 
 ## Configuration files
 
 1. The `vcap-local.json` represents the IBM Cloud VCAP environment locally.  This file is only used when you run the server locally to provide access to the credentials for the services.  An example file is provided called `vcap-local-example.json` which can be renamed to `vcap-local.json`.  Credentials can be copied from the connections page on IBM cloud into this file.
+
 2. The `env-vars.json` file provides a list of environment variables that map either to a VCAP value or a hardcoded value.  An example file is provided called `env-vars-example.json` that can be renamed to `env-vars.json`.
 
-To make the credentials available as an environment variable, you firstly have to populate the credentials in the `vcap-local.json` file, and then create referenced to the credential values in the `env-vars.json` file.
+To make the credentials available as an environment variable, you first have to populate the credentials in the `vcap-local.json` file, and then create referenced to the credential values in the `env-vars.json` file.
 
 ## Watson services components
 
 This framework contains Loopback components for all Watson services.  To enable a component, you have to edit the `server/component-config.json` file and add the required component to the file.
 
-For example, to add Watson Assistant to the `server/component-config.json` file, add the following line.
-
 ```
 "./components/watson-assistant-component/watson-assistant-loader.js": {}
 ```
 
+# Pipeline High-Level Concepts
+
+![Design](resources/Pipeline_High-level_Design.png)
+
+The Pipeline Component orchestrates the service interactions and maintain state throughout the pipeline execution.
+
+The Pipeline Component uses out of the box Loopback Model architecture to execute functions on the models.
+
+The Pipeline Component supports out of the box IBM Cloud Object Storage (COS) interactions to retrieve and save large files.
+
+The Pipeline Component provides a REST API Interface for interacting with the instances of the pipeline.
+
 # Pipeline Configuration
+
+The Pipeline is also a Loopback Component.  The Pipeline Component is already defined in the `server/component-config.json` file.
+
+The Pipeline Component is created with a pipeline configuration object.  The basic parameters of the Pipeline Configuration Object is as follows;
+
+## Pipeline Configuration Object
+
+| Field | Description |
+|-------|-------------|
+| componentStorageModel | A Loopback Model that points to the mass storage container used in the pipeline.  The value specified should be the Model Name. |
+| instanceDataSource | The Loopback DataSource for the Cloudant (or other) database that will be used for the Pipeline Execution State |
+
+
+
+
 
