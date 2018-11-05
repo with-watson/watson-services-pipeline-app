@@ -2,8 +2,11 @@
 
 const LOG = require('../utils/logger.js')
 
-const PipelineController = require('../components/pipeline-component/pipeline-controller')
 const request = require('request')
+
+// The Pipeline Controller is used to interact with the pipeline runtime
+const PipelineController = require('../components/pipeline-component/pipeline-controller')
+// The pipeline helper is a utility module that contains helper functions for interacting with the pipeline
 const pipelineHelper = require('./utils/pipeline-helper')
 
 module.exports = function(PipelineExample) {
@@ -14,7 +17,8 @@ module.exports = function(PipelineExample) {
         cb(null, { 'status': 'ok', 'id': id })
 
         setTimeout(() => {
-            PipelineController.notify(id, { 'field': 'value' })
+            // Use the PipelineController to notify the pipeline of the response.
+            PipelineController.notify(id, { 'field': 'value' }).then()
         }, 2000)
     }
 
@@ -25,6 +29,7 @@ module.exports = function(PipelineExample) {
         LOG.info('In processArrayValue ', value, idx, id )
         let val = value * 100
 
+        // Use the PipelineController to notify the pipeline of the response.
         PipelineController.notify(id, { 'value': val }).then()
     }
 
@@ -44,8 +49,10 @@ module.exports = function(PipelineExample) {
 
         cb(null, { 'status': 'ok', 'id': context.id })
 
+        // Use the Pipeline Helper to retrieve the token for the callback.
         pipelineHelper.getCallbackToken((err, token) => {
             if (err) return cb(err)
+            // Construct the callback url with the token.
             let callbackUrl = process.env.BASE_URL + '/api/Pipeline/notify?access_token=' + token
             // After this will actually be implemented by the external service.
             setTimeout(() => {
@@ -59,6 +66,7 @@ module.exports = function(PipelineExample) {
                     },
                     json: true
                 }
+                // Send the notification back to the pipeline.
                 request.post(opts, (err, response, body) => {
                     if (err) return LOG.error(err)
                     LOG.info('Pipeline Example Service was acknowledged.', body)

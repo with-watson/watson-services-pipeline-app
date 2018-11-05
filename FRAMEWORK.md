@@ -50,7 +50,19 @@ This is a very simple object that tells the pipeline runtine what method to exec
 | method | The method that should be executed in the step |
 | until | This step will be executed until the function returns true.  The until function must be defined in the mapper service.  Used to process multiple files/objects in a single step |
 
+# Implementing a pipeline
 
+## Loopback Models
+
+Start by creating models in Loopback like you usually would.  These models would mostly act as proxies to Watson services.  You can use the provided Loopback components in the project for the basic functionality.
+
+Follow the example service to implement some of the design patterns like sync, async or array handling in your own services.
+
+Use the Loopback Explorer to test out your models.
+
+## Define the pipeline
+
+Edit the `server/component-config.json` file and add a new pipeline definition to `pipelines` array.  Follow the specs above.
 
 ## Setting up IBM Cloud
 
