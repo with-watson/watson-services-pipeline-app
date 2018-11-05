@@ -2,6 +2,56 @@
 
 A Pipeline framework based on Node.js and Loopback.  This implementation is based on the Watson Strategic Partnerships Engineering Framework.
 
+# Pipeline High-Level Concepts
+
+![Design](resources/Pipeline_High-level_Design.png)
+
+The Pipeline Component orchestrates the service interactions and maintain state throughout the pipeline execution.
+
+The Pipeline Component uses out of the box Loopback Model architecture to execute functions on the models.
+
+The Pipeline Component supports out of the box IBM Cloud Object Storage (COS) interactions to retrieve and save large files.
+
+The Pipeline Component provides a REST API Interface for interacting with the instances of the pipeline.
+
+# Pipeline Configuration
+
+The Pipeline is also a Loopback Component.  The Pipeline Component is already defined in the `server/component-config.json` file.
+
+The Pipeline Component is created with a pipeline configuration object.  The basic parameters of the Pipeline Configuration Object is as follows;
+
+## Pipeline Configuration Object
+
+| Field | Description |
+|-------|-------------|
+| componentStorageModel | A Loopback Model that points to the mass storage container used in the pipeline.  The value specified should be the Model Name. |
+| instanceDataSource | The Loopback DataSource for the Cloudant (or other) database that will be used for the Pipeline Execution State |
+| pipelines | An array of pipeline definitions (See Below) |
+
+## Pipeline Definition Object
+
+The pipeline definition object tells the pipeline runtime what steps to execute as well as other information to execute the pipeline.  It consist of the following parameters.
+
+| Field | Description |
+|-------|-------------|
+| name  | The name of the pipeline.  This name must be unique and is used to reference this particular definition. |
+| bucket | The COS Bucket this pipeline will used to retrieve and store data in. |
+| mapper | The mapper model name.  This is a model that consist of functions to map requests and responses before and after a service call is made. |
+| steps  | An array of steps in the pipeline |
+
+## Pipeline Step Object
+
+This is a very simple object that tells the pipeline runtine what method to execute on what service.
+
+| Field | Description |
+|-------|-------------|
+| description | A description of the step |
+| model | The model where the method to execute is defined |
+| method | The method that should be executed in the step |
+| until | This step will be executed until the function returns true.  The until function must be defined in the mapper service.  Used to process multiple files/objects in a single step |
+
+
+
 ## Setting up IBM Cloud
 
 1. If you do not already have an IBM Cloud account, [sign up here](https://console.ng.bluemix.net/registration).
@@ -105,30 +155,7 @@ This framework contains Loopback components for all Watson services.  To enable 
 "./components/watson-assistant-component/watson-assistant-loader.js": {}
 ```
 
-# Pipeline High-Level Concepts
 
-![Design](resources/Pipeline_High-level_Design.png)
-
-The Pipeline Component orchestrates the service interactions and maintain state throughout the pipeline execution.
-
-The Pipeline Component uses out of the box Loopback Model architecture to execute functions on the models.
-
-The Pipeline Component supports out of the box IBM Cloud Object Storage (COS) interactions to retrieve and save large files.
-
-The Pipeline Component provides a REST API Interface for interacting with the instances of the pipeline.
-
-# Pipeline Configuration
-
-The Pipeline is also a Loopback Component.  The Pipeline Component is already defined in the `server/component-config.json` file.
-
-The Pipeline Component is created with a pipeline configuration object.  The basic parameters of the Pipeline Configuration Object is as follows;
-
-## Pipeline Configuration Object
-
-| Field | Description |
-|-------|-------------|
-| componentStorageModel | A Loopback Model that points to the mass storage container used in the pipeline.  The value specified should be the Model Name. |
-| instanceDataSource | The Loopback DataSource for the Cloudant (or other) database that will be used for the Pipeline Execution State |
 
 
 
