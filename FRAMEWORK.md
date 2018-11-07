@@ -65,7 +65,7 @@ Use the Loopback Explorer to test out your models.
 
 Edit the `server/component-config.json` file and add a new pipeline definition to `pipelines` array.  Follow the specs above.
 
-### Setting up IBM Cloud
+# Setting up IBM Cloud
 
 1. If you do not already have an IBM Cloud account, [sign up here](https://console.ng.bluemix.net/registration).
 2. Log in to IBM Cloud with your own credentials.
@@ -77,7 +77,7 @@ Edit the `server/component-config.json` file and add a new pipeline definition t
 8. From the IBM Cloud Dashboard, select the newly created application.
 9. Select Connections on the left.
 
-#### Create the following services using the procedure below
+## Create the following services using the procedure below
 
 >You need some database that is supported by Loopback, doesn't have to be Cloudant
 
@@ -89,7 +89,7 @@ Edit the `server/component-config.json` file and add a new pipeline definition t
 4. Bind it to your application.
 5. Re-stage the application.
 
-#### Create a database in Cloudant
+## Create a database in Cloudant
 
 1. From the IBM Cloud Console, select the Cloudant Service Instance you created for this application.
 2. Launch the tooling to open the Cloudant Dashboard.
@@ -97,7 +97,7 @@ Edit the `server/component-config.json` file and add a new pipeline definition t
 
 This database is required to keep the pipeline state in.
 
-#### Create and bind Cloud Object Storage
+## Create and bind Cloud Object Storage
 
 >Only required if you need Cloud Object Storage to process big files like audio or video
 
