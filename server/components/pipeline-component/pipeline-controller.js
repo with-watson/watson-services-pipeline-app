@@ -44,7 +44,7 @@ PipelineController.prototype.register = function (definition) {
 
             this.definitionCache[definition.name] = definition
 
-            LOG.debug('Pipeline Controller registed a definition: ' + definition.name)
+            LOG.debug('%s Pipeline Controller registed a definition.', definition.name)
 
             resolve()
         })
@@ -69,14 +69,14 @@ PipelineController.prototype.trigger = function (triggerData) {
 
             this.emit('trigger', pipelineInstance.context)
 
-            LOG.debug('Pipeline Controller was triggered and produced instance: ' + act.id)
+            LOG.debug('%s %s Pipeline Controller was triggered and produced instance.', triggerData.pipelineName, act.id)
 
             resolve(act)
 
             // If the pipeline is done, then complete the instance
             if (pipelineInstance.done) {
                 await this.complete(act.id)
-                LOG.debug('Pipeline Controller completes pipeline in trigger function for instance: ' + act.id)
+                LOG.debug('%s %s Pipeline Controller completes pipeline in trigger function for instance.', triggerData.pipelineName, act.id)
             }
 
         } catch (err) {
@@ -104,11 +104,11 @@ PipelineController.prototype.notify = function (id, results) {
             // Respond back to step that is notifying the pipeline that the notification is received.
             resolve(act)
 
-            LOG.debug('Pipeline Controller notified instance: ' + act.id)
+            LOG.debug('%s %s Pipeline Controller notified instance.', pipelineInstance.context.pipelineName, pipelineInstance.context.id)
 
             if (pipelineInstance.done) {
                 await this.complete(act.id)
-                LOG.debug('Pipeline Controller completes pipeline in notification function for instance: ' + act.id)
+                LOG.debug('%s %s Pipeline Controller completes pipeline in notification function for instance.', pipelineInstance.context.pipelineName, pipelineInstance.context.id)
             }
 
             
@@ -141,10 +141,10 @@ PipelineController.prototype.resume = function (resumeData) {
     
             if (pipelineInstance.done) {
                 await this.complete(act.id)
-                LOG.debug('Pipeline Controller completes pipeline in resume function for instance: ' + act.id)
+                LOG.debug('%s %s Pipeline Controller completes pipeline in resume function for instance.', pipelineInstance.context.pipelineName, pipelineInstance.context.id)
             }
 
-            LOG.debug('Pipeline Controller resumed instance: ' + act.id)
+            LOG.debug('%s %s Pipeline Controller resumed instance.', pipelineInstance.context.pipelineName, pipelineInstance.context.id)
             
         } catch (err) {
             LOG.error('PipelineController.resume > ', err)
@@ -200,7 +200,7 @@ PipelineController.prototype.retrieveInstance = function (id) {
             if (this.instanceCache[id]) {
                 return resolve(this.instanceCache[id])
             }
-            LOG.warn('Pipeline instance ' + id + ' is being retrieved from the instance datasource.')
+            LOG.warn('%s Pipeline instance is being retrieved from the instance datasource.', id )
             // Otherwise, check the database for the instance
             this.instanceStore.findById(id, async (err, existing) => {
                 if (err) {

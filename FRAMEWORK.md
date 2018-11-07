@@ -6,7 +6,7 @@ A Pipeline framework based on Node.js and Loopback.  This implementation is base
 
 ![Design](resources/Pipeline_High-level_Design.png)
 
-The Pipeline Component orchestrates the service interactions and maintain state throughout the pipeline execution.
+The Pipeline Component orchestrates the service interactions and maintains state throughout the pipeline execution.
 
 The Pipeline Component uses out of the box Loopback Model architecture to execute functions on the models.
 
@@ -30,18 +30,18 @@ The Pipeline Component is created with a pipeline configuration object.  The bas
 
 ## Pipeline Definition Object
 
-The pipeline definition object tells the pipeline runtime what steps to execute as well as other information to execute the pipeline.  It consist of the following parameters.
+The pipeline definition object tells the pipeline runtime what steps to execute as well as other information to execute the pipeline.  It consists of the following parameters.
 
 | Field | Description |
 |-------|-------------|
 | name  | The name of the pipeline.  This name must be unique and is used to reference this particular definition. |
-| bucket | The COS Bucket this pipeline will used to retrieve and store data in. |
+| bucket | The COS Bucket this pipeline will use to retrieve and store data in. |
 | mapper | The mapper model name.  This is a model that consist of functions to map requests and responses before and after a service call is made. |
 | steps  | An array of steps in the pipeline |
 
 ## Pipeline Step Object
 
-This is a very simple object that tells the pipeline runtine what method to execute on what service.
+This is a very simple object that tells the pipeline runtime what method to execute on what service.
 
 | Field | Description |
 |-------|-------------|
@@ -67,11 +67,11 @@ Edit the `server/component-config.json` file and add a new pipeline definition t
 ## Setting up IBM Cloud
 
 1. If you do not already have an IBM Cloud account, [sign up here](https://console.ng.bluemix.net/registration).
-2. Log into IBM Cloud with your own credentials.
+2. Log in to IBM Cloud with your own credentials.
 3. Create a new application by clicking on the Create Resource button on the IBM Cloud Dashboard.
 4. On the left navigation, select Cloud Foundry Apps.
 5. Click on the SDK for Node.js option on the right.
-6. Enter your unique application name you though of before and click the Create button.
+6. Enter your unique application name you thought of before and click the Create button.
 7. Wait until the application is started and available.
 8. From the IBM Cloud Dashboard, select the newly created application.
 9. Select Connections on the left.
@@ -125,13 +125,13 @@ npm install
 
 ## Building the application
 
->For the application to run on IBM Cloud or locally, it needs to be build first.  
+>For the application to run on IBM Cloud or locally, it needs to be built first.  
 
 To do that, the Prerequisites needs to be met and install must have been executed successfully.
 
 From the App folder, run the command `npm run build:client-prod`.
 
-This will build the code into a folder called dist that will contain 1 sub-folders.  If any error occurred, then the build wasn't successful and is probably a dependency issue or install that wasn't ran or successful.
+This will build the code into a folder called dist that will contain 1 sub-folders.  If any error occurred, then the build wasn't successful and is probably a dependency issue or install that wasn't run or successful.
 
 # Running the app on IBM Cloud
 

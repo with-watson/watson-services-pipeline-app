@@ -32,14 +32,14 @@ var PipelineImpl = function (_app, _definition) {
         history: []
     }
     
-    LOG.debug('Pipeline Instance created.')
+    LOG.debug('%s Pipeline runtime created for definition.', _definition.name)
 
     this.genericStepCallbackHandler = async (err, act) => {
         if (err) {
             await this.error(err)
-            return LOG.error('Generic Step Callback Error: ', err)
+            return LOG.error('Generic Step Callback Error: %s', err)
         }
-        LOG.debug('Pipeline Instance Step Execution Callback: ', act)
+        LOG.debug('%s %s Pipeline Instance Step Execution Callback: %o', this.context.pipelineName, this.context.id, act)
     }    
 
 }
@@ -53,7 +53,7 @@ PipelineImpl.prototype.initialize = function (existing) {
                 this.context.active = {}
                 this.context.active.idx = -1
     
-                LOG.debug('Pipeline instance is initialized from existing instance context: ' + existing.id)
+                LOG.debug('%s %s Pipeline is initialized from existing instance.', this.context.pipelineName, existing.id)
 
                 resolve(this.acknowledge())
     
@@ -66,12 +66,12 @@ PipelineImpl.prototype.initialize = function (existing) {
     
                 this.context.id = created.id
     
-                LOG.debug('Pipeline instance is initialized: ' + created.id)
+                LOG.debug('%s %s Pipeline instance is initialized.', this.context.pipelineName, created.id)
 
                 resolve(this.acknowledge())
             }
         } catch (err) {
-            LOG.error('PipelineImpl.initialize > ', err)
+            LOG.error('%s %s PipelineImpl.initialize > %s', this.context.pipelineName, this.context.id, err)
             await this.error(err)
             reject(err)
         }
@@ -119,7 +119,7 @@ PipelineImpl.prototype.trigger = function (triggerData) {
             // Now call the postMapping function
             this.postProcessing(triggerData)
     
-            LOG.debug('Pipeline instance was triggered: ' + this.context.id)
+            LOG.debug('%s %s Pipeline instance was triggered.',this.context.pipelineName, this.context.id)
             
             let keepgoing = await this.toNext()
             // If it's the end of the pipeline the complete the pipeline
@@ -131,7 +131,7 @@ PipelineImpl.prototype.trigger = function (triggerData) {
             this.step()
     
         } catch (err) {
-            LOG.error('PipelineImpl.trigger > ', err)
+            LOG.error('PipelineImpl.trigger > %s', err)
             await this.error(err)
             reject(err)            
         }
@@ -150,10 +150,10 @@ PipelineImpl.prototype.notify = function (results) {
             if (this.waitingOn && this.waitingOn === this.context.active.key) {
                 this.waitingOn = null
             } else {
-                return reject('Unexpected notification received by Pipeline instance, pipeline is waiting on ', this.waitingOn)
+                return reject('Unexpected notification received by Pipeline instance, pipeline is waiting on %s', this.waitingOn)
             }
 
-            LOG.debug('Pipeline instance was notified: ' + this.context.id)
+            LOG.debug('%s %s Pipeline instance was notified', this.context.pipelineName, this.context.id)
             
             // Move to pointer to the next step in the pipeline
             let keepgoing = await this.toNext()
@@ -167,7 +167,7 @@ PipelineImpl.prototype.notify = function (results) {
             resolve(this.acknowledge())        
     
         } catch (err) {
-            LOG.error('PipelineImpl.notify > ', err)
+            LOG.error('PipelineImpl.notify > %s', err)
             await this.error(err)
             reject(err)            
         }
@@ -194,7 +194,7 @@ PipelineImpl.prototype.resume = function (resumeData) {
                 this.context.active.started = new Date()
                 this.context.active.state = STATE_ACTIVE
                 this.context.active.key = this.context.active.model + '.' + this.context.active.method + '.' + this.context.active.idx    
-                LOG.debug('Pipeline instance resume setting the active step to ', this.context.active)
+                LOG.debug('%s %s Pipeline instance resume setting the active step to %s', this.context.pipelineName, this.context.id, this.context.active)
                 if (this.context.active.model != s[0] || this.context.active.method != s[1]) {
                     return reject('Result from value mismatch with defined step.')
                 }
@@ -209,7 +209,7 @@ PipelineImpl.prototype.resume = function (resumeData) {
 
             resolve(this.acknowledge())
         } catch (err) {
-            LOG.error('PipelineImpl.resume > ', err)
+            LOG.error('PipelineImpl.resume > %s', err)
             await this.error(err)
             reject(err)
         }
@@ -246,7 +246,7 @@ PipelineImpl.prototype.step = function () {
                     // Execute the step function
                     this.app.models[this.context.active.model][this.context.active.method].apply(null, args)
                 } catch (err) {
-                    LOG.error('PipelineImpl.step exection error: ', err)
+                    LOG.error('PipelineImpl.step exection error: %s', err)
                     this.error(err)
                 }
             } else {
@@ -255,7 +255,7 @@ PipelineImpl.prototype.step = function () {
                     clearInterval(this.hold)
                     this.error('Maxmum poll count reached, terminating the pipeline instance.')
                 }
-                LOG.info('Waiting on notification before executing next step: ', this.waitingOn, this.busy)
+                LOG.info('%s %s Waiting on notification before executing next step: %s %s', this.context.pipelineName, this.context.id, this.waitingOn, this.busy)
             }
         }, 1000)
 
@@ -273,13 +273,13 @@ PipelineImpl.prototype.toNext = function () {
                 this.context.active.forloop_index++
                 // execute the until function on the mapper
                 let done = this.mapper[this.context.active.until](this.context, this.context.active.forloop_index)
-                LOG.debug('For-loop until function executed with outcome of ' + done)
+                LOG.debug('%s %s For-loop until function executed with outcome of %s', this.context.pipelineName, this.context.id, done)
                 if (!done) {
                     return resolve(true)
                 }
             }
             let idx = this.context.active.idx
-            LOG.debug('Pipeline instance ' + this.context.id + ' toNext Current active index is ' + idx)
+            LOG.debug('%s %s Pipeline instance toNext Current active index is %d', this.context.pipelineName, this.context.id, idx)
             // Before moving to the next step, wrap up the active step
             this.context.active.ended = new Date()
             this.context.active.state = STATE_COMPLETE
@@ -287,7 +287,7 @@ PipelineImpl.prototype.toNext = function () {
             idx++
             // If the current step was the last step
             if (!this.definition.steps[idx]) {
-                LOG.warn('Pipeline instance' + this.context.id + ' has ended.  Completion process is being initiated...')
+                LOG.warn('%s %s Pipeline instance has ended.  Completion process is being initiated.', this.context.pipelineName, this.context.id)
                 this.done = true
                 // complete the pipeline
                 await this.complete()
@@ -302,10 +302,10 @@ PipelineImpl.prototype.toNext = function () {
             this.context.active.started = new Date()
             this.context.active.state = STATE_ACTIVE
             this.context.active.key = this.context.active.model + '.' + this.context.active.method + '.' + this.context.active.idx
-            LOG.debug('Pipeline instance ' + this.context.id + ' moves to the next step in the pipeline definition: ' + this.context.active.key)
+            LOG.debug('%s %s Pipeline instance moves to the next step in the pipeline definition %s', this.context.pipelineName, this.context.id, this.context.active.key)
             // If the new step is a forloop step, then initialize the forloop
             if (this.context.active.until) {
-                LOG.warn('For-loop step detected.')
+                LOG.warn('%s %s For-loop step detected.', this.context.pipelineName, this.context.id)
                 // create the internal index
                 this.context.active.forloop_index = 0                    
             }            
@@ -321,7 +321,7 @@ PipelineImpl.prototype.toNext = function () {
             resolve(true)
             
         } catch (err) {
-            LOG.error('PipelineImpl.toNext > ', err)
+            LOG.error('PipelineImpl.toNext > %s', err)
             await this.error(err)
             reject(err)
         }
@@ -331,7 +331,7 @@ PipelineImpl.prototype.toNext = function () {
 PipelineImpl.prototype.error = function (err) {
     return new Promise( async (resolve, reject) => {
         try {
-            LOG.error('Pipeline instance ' + this.context.id + ' error: ', err)
+            LOG.error('%s %s Pipeline instance error: %s', this.context.pipelineName, this.context.id, err)
 
             if (this.hold) clearInterval(this.hold)
 
@@ -352,7 +352,7 @@ PipelineImpl.prototype.error = function (err) {
     
             resolve()    
         } catch (err) {
-            LOG.error('PipelineImpl.complete > ', err)
+            LOG.error('PipelineImpl.complete > %s', err)
             reject(err)
         }
     })
@@ -361,7 +361,7 @@ PipelineImpl.prototype.error = function (err) {
 PipelineImpl.prototype.complete = function () {
     return new Promise( async (resolve, reject) => {
         try {
-            LOG.debug('Pipeline instance ' + this.context.id + ' completed.')
+            LOG.debug('%s %s Pipeline instance completed.', this.context.pipelineName, this.context.id)
             // Stop waiting on a notification
             if (this.hold) {
                 clearInterval(this.hold)
@@ -383,7 +383,7 @@ PipelineImpl.prototype.complete = function () {
     
             resolve()    
         } catch (err) {
-            LOG.error('PipelineImpl.complete > ', err)
+            LOG.error('PipelineImpl.complete > %s', err)
             await this.error(err)
             reject(err)
         }
@@ -393,7 +393,7 @@ PipelineImpl.prototype.complete = function () {
 PipelineImpl.prototype.pause = function () {
     return new Promise( async (resolve, reject) => {
         try {
-            LOG.debug('Pipeline instance ' + this.context.id + ' paused.')
+            LOG.debug('%s %s Pipeline instance  paused.', this.context.pipelineName, this.context.id)
 
             this.context.active.state = STATE_PAUSE
             // Finish up the pipeline data
@@ -404,7 +404,7 @@ PipelineImpl.prototype.pause = function () {
     
             resolve()    
         } catch (err) {
-            LOG.error('PipelineImpl.pause > ', err)
+            LOG.error('PipelineImpl.pause > %s', err)
             await this.error(err)
             reject(err)
         }
@@ -435,7 +435,7 @@ PipelineImpl.prototype.preProcessing = function () {
 
     let preMappingFunctionName = tmpModel + tmpMethod
     if (!this.mapper[preMappingFunctionName]) {
-        throw Error('Mapper function does not resolve to a function on the mapper script: ' + preMappingFunctionName)
+        throw Error('Mapper function does not resolve to a function on the mapper script: %s' + preMappingFunctionName)
     }
 
     // Execute the Request mapping function
@@ -460,7 +460,7 @@ PipelineImpl.prototype.createInstance = function () {
                 resolve(created)
             })    
         } catch (err) {
-            LOG.error('PipelineImpl.createInstance > ', err)
+            LOG.error('PipelineImpl.createInstance > %s', err)
             reject(err)
         }
         
@@ -477,7 +477,7 @@ PipelineImpl.prototype.updateInstance = function () {
                 resolve(updated)
             })    
         } catch (err) {
-            LOG.error('PipelineImpl.updateInstance > ', err)
+            LOG.error('PipelineImpl.updateInstance > %s', err)
             reject(err)
         }
     })

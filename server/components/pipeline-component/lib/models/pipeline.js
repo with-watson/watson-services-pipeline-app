@@ -152,11 +152,11 @@ module.exports = function (Pipeline) {
     // REST API Endpoint for callback url when external services are called from the pipeline
     Pipeline.notify = function (notification, cb) {   
 
-        LOG.debug('Pipeline REST Api notified for Pipeline instance: ', notification)
+        LOG.debug('Pipeline REST Api notified for Pipeline instance: %o', notification)
         
         PipelineController.notify(notification.id, notification).then((act) => {
 
-            LOG.debug('Pipeline REST Api notified the Pipeline Controller and received acknowedgement back.', act)
+            LOG.debug('Pipeline REST Api notified the Pipeline Controller and received acknowedgement back. %o', act)
             cb(null, { 'status': 'ok', 'id': notification.id })
     
         }).catch((err) => {
@@ -170,7 +170,7 @@ module.exports = function (Pipeline) {
         LOG.debug('Pipeline REST Api resumed Pipeline instance: ', resumeData.id)
 
         PipelineController.resume(resumeData).then((act) => {
-            LOG.debug('Pipeline REST Api resumed the Pipeline Controller and received acknowedgement back.', act)
+            LOG.debug('Pipeline REST Api resumed the Pipeline Controller and received acknowedgement back. %o', act)
 
             cb(null, { 'status': 'ok', 'id': resumeData.id })    
 
