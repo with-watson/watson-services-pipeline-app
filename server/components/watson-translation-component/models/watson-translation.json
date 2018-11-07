@@ -1,44 +1,60 @@
 {
-    "name": "WatsonTone",
-    "plural": "WatsonTone",
-    "base": "Model",
-    "idInjection": true,
-    "options": {
-      "validateUpsert": true
+  "name": "WatsonTranslation",
+  "plural": "WatsonTranslation",
+  "base": "Model",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {},
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY",
+      "property": "*"
     },
-    "properties": {},
-    "validations": [],
-    "relations": {},
-    "acls": [
-      {
-        "principalType": "ROLE",
-        "principalId": "$everyone",
-        "permission": "DENY",
-        "property": "*"
-      },
-      {
-        "principalType": "ROLE",
-        "principalId": "$authenticated",
-        "permission": "ALLOW",
-        "property": "*"
-      }
-    ],
-    "methods": {
-      "translate": {
-        "accepts": [
-          {
-            "arg": "body",
-            "type": "object",
-            "http": {
-              "source": "body"
-            }
-          }
-        ],
-        "returns": {
+    {
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "*"
+    }
+  ],
+  "methods": {
+    "identifyLanguage": {
+      "accepts": [
+        {
           "arg": "body",
           "type": "object",
-          "root": true
+          "http": {
+            "source": "body"
+          }
         }
+      ],
+      "returns": {
+        "arg": "body",
+        "type": "object",
+        "root": true
+      }
+    },
+    "translateText": {
+      "accepts": [
+        {
+          "arg": "body",
+          "type": "object",
+          "http": {
+            "source": "body"
+          }
+        }
+      ],
+      "returns": {
+        "arg": "body",
+        "type": "object",
+        "root": true
       }
     }
   }
+}
