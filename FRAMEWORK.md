@@ -55,7 +55,7 @@ This is a very simple object that tells the pipeline runtime what method to exec
 
 Start by creating models in Loopback like you usually would.  These models would mostly act as proxies to Watson services.  You can use the provided Loopback components in the project for the basic functionality.  You can also create your own Loopback model to do none Watson work.
 
-The Watson service models are Loopback Components as well and can be enabled by adding them to the `server/component-config.json` file.  Follow [these] (Watson Service Configuration) instructions to configure a Watson Model.
+The Watson service models are Loopback Components as well and can be enabled by adding them to the `server/component-config.json` file.  Follow [these](#watson-service-configuration) instructions to configure a Watson Model.
 
 Follow the example service to implement some of the design patterns like sync, async or array handling in your own services.
 
