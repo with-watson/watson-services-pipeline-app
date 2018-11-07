@@ -2,7 +2,7 @@
 
 A Pipeline framework based on Node.js and Loopback.  This implementation is based on the Watson Strategic Partnerships Engineering Framework.
 
-# Pipeline High-Level Concepts
+## Pipeline High-Level Concepts
 
 ![Design](resources/Pipeline_High-level_Design.png)
 
@@ -14,13 +14,13 @@ The Pipeline Component supports out of the box IBM Cloud Object Storage (COS) in
 
 The Pipeline Component provides a REST API Interface for interacting with the instances of the pipeline.
 
-# Pipeline Configuration
+## Pipeline Configuration
 
 The Pipeline is also a Loopback Component.  The Pipeline Component is already defined in the `server/component-config.json` file.
 
 The Pipeline Component is created with a pipeline configuration object.  The basic parameters of the Pipeline Configuration Object is as follows;
 
-## Pipeline Configuration Object
+### Pipeline Configuration Object
 
 | Field | Description |
 |-------|-------------|
@@ -28,7 +28,7 @@ The Pipeline Component is created with a pipeline configuration object.  The bas
 | instanceDataSource | The Loopback DataSource for the Cloudant (or other) database that will be used for the Pipeline Execution State |
 | pipelines | An array of pipeline definitions (See Below) |
 
-## Pipeline Definition Object
+### Pipeline Definition Object
 
 The pipeline definition object tells the pipeline runtime what steps to execute as well as other information to execute the pipeline.  It consists of the following parameters.
 
@@ -39,7 +39,7 @@ The pipeline definition object tells the pipeline runtime what steps to execute 
 | mapper | The mapper model name.  This is a model that consist of functions to map requests and responses before and after a service call is made. |
 | steps  | An array of steps in the pipeline |
 
-## Pipeline Step Object
+### Pipeline Step Object
 
 This is a very simple object that tells the pipeline runtime what method to execute on what service.
 
@@ -50,9 +50,9 @@ This is a very simple object that tells the pipeline runtime what method to exec
 | method | The method that should be executed in the step |
 | until | This step will be executed until the function returns true.  The until function must be defined in the mapper service.  Used to process multiple files/objects in a single step |
 
-# Implementing a pipeline
+## Implementing a pipeline
 
-## Loopback Models
+### Loopback Models
 
 Start by creating models in Loopback like you usually would.  These models would mostly act as proxies to Watson services.  You can use the provided Loopback components in the project for the basic functionality.
 
@@ -60,11 +60,11 @@ Follow the example service to implement some of the design patterns like sync, a
 
 Use the Loopback Explorer to test out your models.
 
-## Define the pipeline
+### Define the pipeline
 
 Edit the `server/component-config.json` file and add a new pipeline definition to `pipelines` array.  Follow the specs above.
 
-## Setting up IBM Cloud
+### Setting up IBM Cloud
 
 1. If you do not already have an IBM Cloud account, [sign up here](https://console.ng.bluemix.net/registration).
 2. Log in to IBM Cloud with your own credentials.
@@ -76,7 +76,7 @@ Edit the `server/component-config.json` file and add a new pipeline definition t
 8. From the IBM Cloud Dashboard, select the newly created application.
 9. Select Connections on the left.
 
-### Create the following services using the procedure below
+#### Create the following services using the procedure below
 
 >You need some database that is supported by Loopback, doesn't have to be Cloudant
 
@@ -88,7 +88,7 @@ Edit the `server/component-config.json` file and add a new pipeline definition t
 4. Bind it to your application.
 5. Re-stage the application.
 
-### Create a database in Cloudant
+#### Create a database in Cloudant
 
 1. From the IBM Cloud Console, select the Cloudant Service Instance you created for this application.
 2. Launch the tooling to open the Cloudant Dashboard.
@@ -96,7 +96,7 @@ Edit the `server/component-config.json` file and add a new pipeline definition t
 
 This database is required to keep the pipeline state in.
 
-### Create and bind Cloud Object Storage
+#### Create and bind Cloud Object Storage
 
 >Only required if you need Cloud Object Storage to process big files like audio or video
 
