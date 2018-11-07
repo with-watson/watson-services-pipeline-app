@@ -6,17 +6,16 @@ A Pipeline framework based on Node.js and Loopback.  This implementation is base
 
 ![Design](resources/Pipeline_High-level_Design.png)
 
-The Pipeline Component orchestrates the service interactions and maintains state throughout the pipeline execution.
-
-The Pipeline Component uses out of the box Loopback Model architecture to execute functions on the models.
-
-The Pipeline Component supports out of the box IBM Cloud Object Storage (COS) interactions to retrieve and save large files.
-
-The Pipeline Component provides a REST API Interface for interacting with the instances of the pipeline.
+* The Pipeline Component orchestrates the service interactions and maintains state throughout the pipeline execution.
+* The Pipeline Component use "out of the box" Loopback Model architecture to execute functions on the models you create.
+* The Pipeline Component supports out of the box IBM Cloud Object Storage (COS) interactions to retrieve and save large files.
+* The Pipeline Component provides a REST API Interface for interacting with the instances of the pipeline.
 
 ## Pipeline Configuration
 
-The Pipeline is also a Loopback Component.  The Pipeline Component is already defined in the `server/component-config.json` file.
+The Pipeline is also a Loopback Component.  The Pipeline Component is already defined in the `server/component-config.json` file.  Use the example pipeline to create your own.
+
+> Install the dependencies described below, create your IBM Cloud resources and run the example pipeline locally.
 
 The Pipeline Component is created with a pipeline configuration object.  The basic parameters of the Pipeline Configuration Object is as follows;
 
@@ -54,7 +53,9 @@ This is a very simple object that tells the pipeline runtime what method to exec
 
 ### Loopback Models
 
-Start by creating models in Loopback like you usually would.  These models would mostly act as proxies to Watson services.  You can use the provided Loopback components in the project for the basic functionality.
+Start by creating models in Loopback like you usually would.  These models would mostly act as proxies to Watson services.  You can use the provided Loopback components in the project for the basic functionality.  You can also create your own Loopback model to do none Watson work.
+
+The Watson service models are Loopback Components as well and can be enabled by adding them to the `server/component-config.json` file.  Follow [these] (Watson Service Configuration) instructions to configure a Watson Model.
 
 Follow the example service to implement some of the design patterns like sync, async or array handling in your own services.
 
