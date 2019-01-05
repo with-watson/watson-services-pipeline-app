@@ -1,6 +1,6 @@
 # Watson Services Pipeline
 
-A Pipeline framework based on Node.js and Loopback.  This implementation is based on the Watson Strategic Partnerships Engineering Framework.
+A Pipeline framework based on Node.js and Loopback.  This implementation is based on the Watson Strategic Partnerships Engineering Framework and makes use of Loopback as the base server implementation.
 
 ## Pipeline High-Level Concepts
 
@@ -10,6 +10,20 @@ A Pipeline framework based on Node.js and Loopback.  This implementation is base
 * The Pipeline Component use "out of the box" Loopback Model architecture to execute functions on the models you create.
 * The Pipeline Component supports out of the box IBM Cloud Object Storage (COS) interactions to retrieve and save large files.
 * The Pipeline Component provides a REST API Interface for interacting with the instances of the pipeline.
+
+## Pipeline Lifecycle
+
+![Lifecycle](resources/Pipeline_Life_Cycle.png)
+
+1. Pipeline Instance is triggered using one of the provided methods.
+2. The Post trigger function is called on the Mapper model.  This function is usually where you would map custom data into the Pipeline Context Object.
+3. The subsequent defined step in the pipeline definition is executed.
+4. The Pre call function is called on the Mapper model.  This is where you would take data from the context to construct the parameters that is passed to the defined Model function for this step.
+5. Model function for this step is called with the parameters you returned from the Pre function.
+6. The Remote method in the model calls out to an API or does some kind of work.
+7. Once the Remote method is done, the `notify()` function is called on the Pipeline Controller to indicate that the pipeline can continue.
+8. The Post function is called on the Mapper model to save the results of the service call to the Pipeline Context object.
+9. The Pipeline continues on to the next defined step and the process starts all over.
 
 ## Pipeline Configuration
 
