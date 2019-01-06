@@ -1,9 +1,80 @@
-<div class="jumbotron jumbotron-fluid border-bottom">
-  <div class="container">
-    <h4 class="display-4">IBM Watson Fullstack Development Scaffolding</h4>
-    <p class="lead">A framework based on Loopback, Anguler and Bootstrap to quickly develop an application using IBM Watson services.</p>
+<div class="main-container">
+  <app-header [activeUserInfo]="activeUserInfo" (onNewTrigger)='showTriggerWiz()'></app-header>
+  <div class="content-container">
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 </div>
-<div class="container">
-  <p>This is the Home Component.  This is the entry point to the rest of the application capabilities.</p>
-</div>
+<clr-wizard #triggerWiz [(clrWizardOpen)]="triggerWizOpen" clrWizardSize="lg" (clrWizardOnFinish)="onTriggerWizFinished()">
+  <clr-wizard-title>Create a new Pipeline</clr-wizard-title>
+
+  <clr-wizard-button [type]="'cancel'">Cancel</clr-wizard-button>
+  <clr-wizard-button [type]="'previous'">Back</clr-wizard-button>
+  <clr-wizard-button [type]="'next'">Next</clr-wizard-button>
+  <clr-wizard-button [type]="'finish'">Finish</clr-wizard-button>
+
+  <clr-wizard-page (clrWizardPageOnCancel)="onTriggerWizCancel()">
+    <ng-template clrPageTitle>Trigger Type</ng-template>
+    <div>
+      <div class="clr-form-control">
+        <label class="clr-control-label">Select a type of Trigger</label>
+        <div class="clr-control-container">
+          <div class="clr-radio-wrapper">
+            <input type="radio" id="vertical-radio1" name="radio-full" value="simple" class="clr-radio" [(ngModel)]="selectedTriggerType">
+            <label for="vertical-radio1" class="clr-control-label">Simple Trigger</label>
+          </div>
+          <div class="clr-radio-wrapper">
+            <input type="radio" id="vertical-radio2" name="radio-full" value="postupload" class="clr-radio" [(ngModel)]="selectedTriggerType">
+            <label for="vertical-radio2" class="clr-control-label">Post-Upload Trigger</label>
+          </div>
+          <div class="clr-radio-wrapper">
+            <input type="radio" id="vertical-radio3" name="radio-full" value="upload" class="clr-radio" [(ngModel)]="selectedTriggerType">
+            <label for="vertical-radio3" class="clr-control-label">Upload Trigger</label>
+          </div>
+          <div class="clr-subtext-wrapper">
+            <clr-icon class="clr-validate-icon" shape="exclamation-circle"></clr-icon>
+            <span class="clr-subtext">What type of trigger would you like to use to initiate a new Pipeline instance?</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </clr-wizard-page>
+
+  <clr-wizard-page (clrWizardPageOnCancel)="onTriggerWizCancel()">
+    <ng-template clrPageTitle>Pipeline Definition</ng-template>
+    <section class="form-block">
+      <label>Available Definitions</label>
+      <div class="form-group">
+        <div class="select">
+          <select id="selects_5" [(ngModel)]="selectedPipelineDef">
+            <option *ngFor="let def of availablePipelineDefs">{{def}}</option>
+          </select>
+        </div>
+      </div>
+    </section>
+  </clr-wizard-page>
+
+  <clr-wizard-page *ngIf="selectedTriggerType=='postupload'" [clrWizardPageNextDisabled]="!selectedCosFile" (clrWizardPageOnCancel)="onTriggerWizCancel()" (clrWizardPageOnLoad)="onCosListWizPageLoad()">
+    <ng-template clrPageTitle>Select a File already on Storage</ng-template>
+    <app-cos-list [renderGrid]="renderCosListGrid" [selectedCosFile]="selectedCosFile" [pipelineName]="selectedPipelineDef" (onSelectedFileChange)="selectedCosFileChanged($event)"></app-cos-list>
+  </clr-wizard-page>
+
+  <clr-wizard-page *ngIf="selectedTriggerType=='upload'" [clrWizardPageNextDisabled]="false" (clrWizardPageOnCancel)="onTriggerWizCancel()">
+      <ng-template clrPageTitle>Select File to Upload to Storage</ng-template>
+      <clr-input-container>
+          <label>
+            <input type="file" placeholder="Upload file" name="selectedUploadFile" accept="*" (change)="onSelectedUploadFileChange($event)"/>
+          </label>
+      </clr-input-container>
+  </clr-wizard-page>
+  
+  <clr-wizard-page [clrWizardPageNextDisabled]="validateTriggerData()" (clrWizardPageOnCancel)="onTriggerWizCancel()">
+    <ng-template clrPageTitle>Additional Reference Data</ng-template>
+    <clr-textarea-container>
+      <label>Reference Data JSON Object</label>
+      <textarea clrTextarea [(ngModel)]="refDataStr" name="refDataStr" cols="60"></textarea>
+      <clr-control-helper>JSON Data that is passed into the Trigger Request as additional reference data.</clr-control-helper>
+    </clr-textarea-container>
+  </clr-wizard-page>
+</clr-wizard>

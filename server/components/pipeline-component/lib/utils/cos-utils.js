@@ -23,11 +23,12 @@ function CosUtils() { }
 
 CosUtils.prototype.bucketExist = function (bucket, create, callback) {
 
+    LOG.debug('Checking if bucket exist: %s', bucket)
+
     cosImpl.headBucket({ Bucket: bucket }, (err, existing) => {
-        if (err) {
-
+        if (err && err !== null) {
             if (create) {
-
+                LOG.info('The requested bucket did not exist, creating it...')
                 var params = {
                     Bucket: bucket,
                     CreateBucketConfiguration: {
@@ -37,6 +38,7 @@ CosUtils.prototype.bucketExist = function (bucket, create, callback) {
 
                 cosImpl.createBucket(params, (err, results) => {
                     if (err) return callback(err)
+                    LOG.info('Bucket successfully created.')
                     callback(null, results)
                 })
 
@@ -44,8 +46,31 @@ CosUtils.prototype.bucketExist = function (bucket, create, callback) {
                 callback({ 'error': 'Bucket does not exist.' })
             }
         } else {
+            LOG.info('Bucket %s - already exist.', bucket)
             callback(null, existing)
         }
+    })
+}
+
+CosUtils.prototype.fileExist = function (bucket, fileName, callback) {
+
+    let params = { Bucket: bucket, Key: fileName }
+
+    cosImpl.headObject(params, (err, metadata) => {
+        if (err) return callback(err)
+
+        callback(null, metadata)
+    })
+}
+
+CosUtils.prototype.listObjects = function (bucket, callback) {
+
+    let params = { Bucket: bucket }
+
+    cosImpl.listObjects(params, (err, data) => {
+        if (err) return callback(err)
+
+        callback(null, data)
     })
 }
 

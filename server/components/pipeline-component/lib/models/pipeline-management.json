@@ -1,0 +1,150 @@
+{
+    "name": "PipelineManagement",
+    "description": "This API is used to interact and manage the pipeline instances.",
+    "plural": "PipelineManagement",
+    "base": "Model",
+    "idInjection": true,
+    "options": {
+        "validateUpsert": true
+    },
+    "properties": {},
+    "validations": [],
+    "relations": {},
+    "acls": [
+        {
+            "principalType": "ROLE",
+            "principalId": "$everyone",
+            "permission": "DENY",
+            "property": "*"
+        },
+        {
+            "principalType": "ROLE",
+            "principalId": "$authenticated",
+            "permission": "ALLOW",
+            "property": "*"
+        }
+    ],
+    "methods": {
+        "listAll": {
+            "description": "List all the pipeline instances in the database, based on the query",
+            "accepts": {
+                "arg": "query",
+                "type": "object",
+                "http": {
+                    "source": "body"
+                }
+            },
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            }
+        },
+        "findById": {
+            "description": "Find the Pipeline Instance referreced by the passed in id.",
+            "accepts": {
+                "arg": "id",
+                "type": "string"
+            },
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            },
+            "http": {
+                "verb": "get"
+            }
+        },
+        "destroyById": {
+            "description": "Deletes the pipeline instance referred to by the id, from the datasource.",
+            "accepts": {
+                "arg": "id",
+                "type": "string",
+                "required": true,
+                "http": {
+                    "source": "query"
+                }
+            },
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            },
+            "http": {
+                "verb": "delete"
+            }
+        },
+        "getPipelineStateSummary": {
+            "description": "List a summary of the state of all the pipeline instances in the database",
+            "accepts": [
+                {
+                    "arg": "byPeriod",
+                    "description": "Optional parameter to get results by specific period.  Acceptable values are hour, day, month and year.",
+                    "type": "string"
+                }
+            ],
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            },
+            "http": {
+                "verb": "get"
+            }
+        },
+        "getByPipelineState": {
+            "description": "List of pipeline instances by state",
+            "accepts": [
+                {
+                    "arg": "state",
+                    "type": "string",
+                    "required": true
+                },
+                {
+                    "arg": "startDt",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "arg": "endDt",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "arg": "limit",
+                    "type": "number",
+                    "required": true
+                },
+                {
+                    "arg": "skip",
+                    "type": "number",
+                    "required": true
+                }
+            ],
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            },
+            "http": {
+                "verb": "get"
+            }
+        },
+        "getFilesReadyToProcess": {
+            "description": "Return all the files on Cloud Object Storage that has not been processed yet.",
+            "accepts": {
+                "arg": "pipelineName",
+                "type": "string",
+                "required": true
+            },
+            "returns": {
+                "arg": "body",
+                "type": "object",
+                "root": true
+            },
+            "http": {
+                "verb": "get"
+            }
+        }
+    }
+}

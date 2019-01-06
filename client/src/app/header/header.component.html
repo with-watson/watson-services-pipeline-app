@@ -1,0 +1,31 @@
+<header class="header-6">
+    <div class="branding">
+        <a href="javascript://" class="nav-link">
+            <span class="clr-icon clr-watson-logo"></span>
+            <span class="title">Pipeline Manager</span>
+        </a>
+    </div>
+    <div class="header-nav">
+            <a href="javascript://" class="nav-link nav-text" routerLink="/home/overview">Overview</a>
+        </div>
+    <div class="header-nav">
+        <a href="javascript://" class="nav-link nav-text" (click)="onNewTriggerClick()">Trigger</a>
+    </div>
+    <div class="header-nav">
+        <a href="javascript://" class="nav-link nav-text" (click)="onPipelineDefinition()">Pipeline Definitions</a>
+    </div>
+    <div class="header-actions">
+        <clr-dropdown>
+            <button class="nav-text" clrDropdownTrigger>
+                {{activeUserInfo.email}}
+                <clr-icon shape="caret down"></clr-icon>
+            </button>
+            <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+                <a *ngIf="activeUserInfo.roles && activeUserInfo.roles.indexOf('admin') >= 0" href="javascript://" clrDropdownItem routerLink="/home/user-management">User Management</a>
+                <a href="javascript://" clrDropdownItem (click)="changePassword()">Change my Password</a>
+                <a href="javascript://" clrDropdownItem (click)="logout()">Log out</a>
+            </clr-dropdown-menu>
+        </clr-dropdown>
+    </div>
+</header>
+<app-change-password [showChangePassword]="showChangePassword"></app-change-password>

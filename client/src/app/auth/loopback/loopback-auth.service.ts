@@ -1,10 +1,10 @@
 
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpRequest, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 
 import { throwError as observableThrowError,  Observable, throwError } from 'rxjs';
-import { catchError, retry, tap, map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { of } from 'rxjs'
 
 @Injectable()
@@ -18,6 +18,9 @@ export class LoopbackAuthService {
   private TOKEN_KEY = 'api-user-token';
   private USER_ID_KEY = 'api-user-id';
 
+  private activeUserId: string = undefined;
+  private activeUserInfo: any = undefined;
+
   // Resolve HTTP using the constructor
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -26,6 +29,8 @@ export class LoopbackAuthService {
     let cachedToken = this.getLoopbackToken();
     
     if (cachedToken && cachedToken.token && cachedToken.id) {
+
+      this.activeUserId = cachedToken.id
 
       let validateTokenUrl = this.findByIdUrl + '/' + cachedToken.id + '/accessTokens/' + cachedToken.token + '?access_token=' + cachedToken.token;
 
@@ -55,6 +60,10 @@ export class LoopbackAuthService {
       map((res: any) => {
         this.saveLoopbackToken(res);
         this.router.navigate(['/']);
+        this.activeUserId = res.userId
+
+        this.setActiveUserInfo().subscribe(() => {})
+
         return res;
       }),
 
@@ -75,6 +84,9 @@ export class LoopbackAuthService {
       return this.http.post(url, {}).pipe(
 
         map((res: any) => {
+          this.activeUserId = undefined
+          this.activeUserInfo = undefined
+
           this.deleteLookbackToken();
           this.router.navigate(['login']);
           return 'false';
@@ -83,6 +95,28 @@ export class LoopbackAuthService {
         catchError((error: HttpErrorResponse) => observableThrowError(error))
       )
     }
+  }
+
+  public getActiveUserInfo(): Observable<any> {
+    if (this.activeUserInfo) {
+      return Observable.create((observer) => {
+        observer.next(this.activeUserInfo)
+      })
+    } else {
+      return this.setActiveUserInfo()
+    }
+  }
+
+  public setActiveUserInfo(): Observable<any> {
+
+    let cachedToken = this.getLoopbackToken();
+
+    let url = this.findByIdUrl + '/' + this.activeUserId + '?access_token=' + cachedToken.token
+
+    return this.http.get(url).pipe(map((res: any) => {
+      this.activeUserInfo = res
+      return res
+    }))
   }
 
   // Remove the token from session storage.
@@ -154,10 +188,25 @@ export class LoopbackAuthService {
 
   // Make an HTTP Post with raw JSON data in the body of the request to the provided URL
   public httpPostRaw(url, data, contentType?): Observable<any> {
+
     let params = new HttpParams().set('access_token', this.getLoopbackToken().token);
-    let headers = new HttpHeaders({ 'Content-Type': contentType ? contentType : 'application/json' });
+
     return this.http.post(url, data, { params: params }).pipe(catchError((error, caught) => {
+
       return this.handleError(error)
+
+    }))
+  }
+
+  // Make an HTTP Post with raw JSON data in the body of the request to the provided URL
+  public httpPatchRaw(url, data): Observable<any> {
+
+    let params = new HttpParams().set('access_token', this.getLoopbackToken().token);
+
+    return this.http.patch(url, data, { params: params }).pipe(catchError((error, caught) => {
+
+      return this.handleError(error)
+
     }))
   }
 

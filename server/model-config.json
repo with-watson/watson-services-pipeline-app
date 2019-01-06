@@ -20,6 +20,12 @@
       "remoting": {
         "sharedMethods": {
           "*": false,
+          "findById": true,
+          "find": true,
+          "create": true,
+          "prototype.patchAttributes": true,
+          "changePassword": true,
+          "deleteById": true,
           "login": true,
           "logout": true,
           "isInRole": true,

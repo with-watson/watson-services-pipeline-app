@@ -1,43 +1,40 @@
-<div class="container-fluid">
-  <div *ngIf="isError" class="alert alert-danger">
-    {{errorMsg}}
-  </div>
-  <div class="row align-items-center h-100">
-    <div class="col-lg-4 col-md-8 col-sm-12 m-auto">
-      <div class="card align-self-center">
-        <div class="card-header">
-          <strong> Sign in to continue</strong>
-        </div>
-        <div class="card-body">
-          <form #loginForm="ngForm" (ngSubmit)="submitLogin()">
-            <fieldset>
-              <div class="form-group">
-                <div class="input-group">
-                  <span class="input-group-prepend">
-                    <span class="input-group-text" id="basic-addon1">
-                      <i class="fa fa-user"></i>
-                    </span>
-                  </span>
-                  <input [(ngModel)]="credentials.username" #username="ngModel" class="form-control" placeholder="Username" id="username" name="username"
-                    type="text" autofocus required>
+<div class="main-container">
+  <clr-alert *ngIf="isError" [clrAlertClosable]="false" [clrAlertType]="'danger'">
+    <clr-alert-item>
+      <span class="alert-text">
+          {{errorMsg}}
+      </span>
+    </clr-alert-item>
+  </clr-alert>
+  <div class="content-container">
+    <div class="content-area">
+      <div class="clr-row" style="margin-top:150px;">
+        <div class="clr-col-md-4 clr-col-xs-1"></div>
+        <div class="clr-col-md-4 clr-col-xs-10">
+          <div class="card">
+            <div class="card-header">
+              <strong> Sign in to continue</strong>
+            </div>
+            <div class="card-body">
+              <form clrForm #loginForm="ngForm" (ngSubmit)="submitLogin()" class="login">
+                <div class="clr-row">
+                  <div class="clr-col-md-4 clr-col-xs-1"></div>
+                  <div class="clr-col-md-4 clr-col-xs-10">
+                    <clr-input-container>
+                      <input clrInput [(ngModel)]="credentials.username" placeholder="Username" name="username" type="text"
+                        autofocus required>
+                    </clr-input-container>
+                    <clr-password-container>
+                      <input clrPassword [(ngModel)]="credentials.password" placeholder="Password" name="password" type="password"
+                        required>
+                    </clr-password-container>
+                    <button type="submit" style="margin-top:50px" class="btn btn-lg btn-primary btn-block" value="Sign in"
+                      [disabled]="!loginForm.valid">Sign in</button>
+                  </div>
                 </div>
-              </div>
-              <div class="form-group">
-                <div class="input-group">
-                  <span class="input-group-prepend">
-                    <span class="input-group-text" id="basic-addon1">
-                      <i class="fa fa-lock"></i>
-                    </span>
-                  </span>
-                  <input [(ngModel)]="credentials.password" #password="ngModel" class="form-control" placeholder="Password" id="password" name="password"
-                    type="password" required>
-                </div>
-              </div>
-              <div class="form-group">
-                <input type="submit" class="btn btn-lg btn-primary btn-block" value="Sign in" [disabled]="!loginForm.valid">
-              </div>
-            </fieldset>
-          </form>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>

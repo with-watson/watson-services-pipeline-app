@@ -1,0 +1,22 @@
+<clr-datagrid (clrDgRefresh)="refresh($event)" [clrDgLoading]="loading">
+    <clr-dg-column>Id</clr-dg-column>
+    <clr-dg-column>Pipeline Name</clr-dg-column>
+    <clr-dg-column>Created On</clr-dg-column>
+
+    <clr-dg-row *ngFor="let pi of pipelineInstances">
+        <clr-dg-action-overflow>
+            <button class="action-item" (click)="onViewInstance(pi.id)">View</button>
+            <button class="action-item" (click)="onDestroyInstance(pi.id)">Destroy</button>
+        </clr-dg-action-overflow>
+        <clr-dg-cell>{{ pi.id }}</clr-dg-cell>
+        <clr-dg-cell>{{ pi.pipelineName }}</clr-dg-cell>
+        <clr-dg-cell>{{ pi.created | date: 'medium' }}</clr-dg-cell>
+    </clr-dg-row>
+
+    <clr-dg-footer>
+        <clr-dg-pagination #pagination [clrDgPageSize]="limit" [clrDgTotalItems]="totalRows" [(clrDgPage)]="clrDgPage">
+            {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}}
+            of {{pagination.totalItems}} Instances
+        </clr-dg-pagination>
+    </clr-dg-footer>
+</clr-datagrid>

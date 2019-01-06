@@ -1,0 +1,61 @@
+<div class="clr-row">
+  <div class="clr-col-4">
+    <div class="card info-card">
+      <div class="card-block">
+        <div class="card-title">
+          Completed Pipeline Instances
+        </div>
+        <div class="card-block">
+            <div class="progress success top">
+                <progress value="100" max="100"></progress>
+            </div>
+          {{summary.completed}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="clr-col-4">
+    <div class="card info-card">
+      <div class="card-block">
+        <div class="card-title">
+          Active Pipeline Instances
+        </div>
+        <div class="card-block">
+            <div class="progress top">
+                <progress value="100" max="100"></progress>
+            </div>
+          {{summary.active}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="clr-col-4">
+    <div class="card info-card">
+      <div class="card-block">
+        <div class="card-title">
+          Failed Pipeline Instances
+        </div>
+        <div class="card-block">
+            <div class="progress danger top">
+                <progress value="100" max="100"></progress>
+            </div>
+          {{summary.failed}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="clr-row">
+  <div class="clr-col-12">
+    <div class="card info-card">
+      <div class="card-block">
+        <div class="card-title">
+          Pipeline Instances
+        </div>
+        <div class="card-block">
+          <app-instances-tab></app-instances-tab>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

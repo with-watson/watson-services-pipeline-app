@@ -1,0 +1,23 @@
+<clr-tabs>
+  <clr-tab>
+    <button clrTabLink (click)="onTypeChange('completed')">Completed</button>
+    <clr-tab-content *clrIfActive>
+      <app-instances-table [type]="'completed'"></app-instances-table>
+    </clr-tab-content>
+  </clr-tab>
+
+  <clr-tab>
+    <button clrTabLink (click)="onTypeChange('active')">Active</button>
+    <clr-tab-content *clrIfActive>
+      <app-instances-table [type]="'active'"></app-instances-table>
+    </clr-tab-content>
+  </clr-tab>
+  
+  <clr-tab>
+    <button clrTabLink (click)="onTypeChange('failed')">Failed</button>
+    <clr-tab-content *clrIfActive>
+      <app-instances-table [type]="'failed'"></app-instances-table>
+    </clr-tab-content>
+  </clr-tab>
+
+</clr-tabs>

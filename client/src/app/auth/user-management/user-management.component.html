@@ -1,0 +1,99 @@
+<clr-alert *ngIf="showAlert" [clrAlertClosable]="false" [clrAlertType]="'success'">
+    <clr-alert-item>
+        <span class="alert-text">
+            {{alertMessage}}
+        </span>
+    </clr-alert-item>
+</clr-alert>
+<div class="card info-card">
+    <div class="card-block">
+        <div class="card-title">
+            User Management
+        </div>
+        <div class="card-block">
+            <button class="btn btn-primary" (click)="onAddUser()">Add new User</button>
+            <clr-datagrid (clrDgRefresh)="refresh($event)" [clrDgLoading]="loading">
+                <clr-dg-column>User Name</clr-dg-column>
+                <clr-dg-column>Email</clr-dg-column>
+
+                <clr-dg-row *ngFor="let user of users">
+                    <clr-dg-action-overflow>
+                        <button class="action-item" (click)="onEditUser(user)">Edit</button>
+                        <button class="action-item" (click)="onDestroyUser(user)">Delete</button>
+                    </clr-dg-action-overflow>
+                    <clr-dg-cell>{{ user.username }}</clr-dg-cell>
+                    <clr-dg-cell>{{ user.email }}</clr-dg-cell>
+                </clr-dg-row>
+
+                <clr-dg-footer>
+                    <clr-dg-pagination #pagination [clrDgPageSize]="limit" [clrDgTotalItems]="totalRows" [(clrDgPage)]="clrDgPage">
+                        {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}}
+                        of {{pagination.totalItems}} Instances
+                    </clr-dg-pagination>
+                </clr-dg-footer>
+            </clr-datagrid>
+        </div>
+    </div>
+</div>
+<clr-modal #addUserModal [(clrModalOpen)]="_addUserModal" [clrModalSize]="'sm'">
+    <h3 class="modal-title">Add New User</h3>
+    <div class="modal-body">
+        <form clrForm [formGroup]="addUserForm" novalidate>
+            <clr-input-container>
+                <label>Username</label>
+                <input clrInput type="text" formControlName="username" />
+            </clr-input-container>
+            <clr-input-container>
+                <label>Email Address</label>
+                <input clrInput type="text" formControlName="email" />
+            </clr-input-container>
+            <clr-input-container>
+                <label>Password</label>
+                <input clrInput type="password" formControlName="password" />
+            </clr-input-container>
+            <clr-input-container>
+                <label>Confirm Password</label>
+                <input clrInput type="password" formControlName="password_confirmed" />
+            </clr-input-container>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="_addUserModal = false">Cancel</button>
+        <button type="submit" class="btn btn-primary" (click)="submitAddUserForm(addUserForm.value);_addUserModal = false"
+            [disabled]="addUserForm.invalid">Ok</button>
+    </div>
+</clr-modal>
+<clr-modal #editUserModal [(clrModalOpen)]="_editUserModal" [clrModalSize]="'sm'">
+    <h3 class="modal-title">Edit User</h3>
+    <div class="modal-body">
+        <form clrForm [formGroup]="editUserForm" novalidate>
+            <clr-input-container>
+                <label>Id</label>
+                <input clrInput type="text" formControlName="id" readonly />
+            </clr-input-container>
+            <clr-input-container>
+                <label>Username</label>
+                <input clrInput type="text" formControlName="username" readonly />
+            </clr-input-container>
+            <clr-input-container>
+                <label>Email Address</label>
+                <input clrInput type="text" formControlName="email" />
+            </clr-input-container>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="_editUserModal = false">Cancel</button>
+        <button type="submit" class="btn btn-primary" (click)="submitEditUserForm(editUserForm.value);_editUserModal = false"
+            [disabled]="editUserForm.invalid">Ok</button>
+    </div>
+</clr-modal>
+<clr-modal #deleteUserModal [(clrModalOpen)]="_deleteUserModal" [clrModalSize]="'md'">
+    <h3 class="modal-title">Delete User</h3>
+    <div class="modal-body">
+        <p>Are you sure you want to permanently remove the user from the system?</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="_deleteUserModal = false">No</button>
+        <button type="submit" class="btn btn-danger" (click)="submitDestroyUser();_deleteUserModal = false">Yes</button>
+    </div>
+</clr-modal>

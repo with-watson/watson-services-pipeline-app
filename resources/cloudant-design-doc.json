@@ -1,0 +1,10 @@
+{
+    "_id": "_design/pipeline-db-design",
+    "views": {
+      "state-view": {
+        "map": "function (doc) {\n  var dt = new Date(doc.created);\n  emit([doc.state, dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate(), dt.getUTCHours()], { _id: doc._id, pipelineName: doc.pipelineName, created: doc.created, state: doc.state });\n}",
+        "reduce": "_count"
+      }
+    },
+    "language": "javascript"
+  }

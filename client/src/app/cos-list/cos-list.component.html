@@ -1,0 +1,18 @@
+<clr-datagrid *ngIf="renderGrid" [clrDgSingleSelected]="selectedCosFile" [(clrDgSingleSelected)]="selectedCosFile" [clrDgRowSelection]="true" (clrDgSingleSelectedChange)="selectedFileChanged($event)">
+  <clr-dg-column>
+    Filename
+    <clr-dg-string-filter [clrDgStringFilter]="fileNameFilter"></clr-dg-string-filter>
+  </clr-dg-column>
+
+  <clr-dg-row *clrDgItems="let fileName of availableCosFiles" [clrDgItem]="fileName">
+    <clr-dg-cell>{{fileName}}</clr-dg-cell>
+  </clr-dg-row>
+
+  <clr-dg-footer>
+      <clr-dg-pagination #pagination [clrDgPageSize]="5" [clrDgTotalItems]="10">
+          {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}}
+          of {{pagination.totalItems}} files
+      </clr-dg-pagination>
+  </clr-dg-footer>
+
+</clr-datagrid>

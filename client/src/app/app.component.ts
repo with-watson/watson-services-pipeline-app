@@ -10,6 +10,6 @@ import { Title } from '@angular/platform-browser'
 export class AppComponent {
 
   constructor(private TitleSvc:Title) {
-    this. TitleSvc.setTitle('wsl-lb3-ng5-bs4-starter');
+    this. TitleSvc.setTitle('Pipeline Manager');
   }
 }

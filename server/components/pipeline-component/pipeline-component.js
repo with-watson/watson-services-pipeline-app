@@ -13,7 +13,11 @@ module.exports = async function (app, options) {
     }
     // Create all the Pipeline Models
     if (!app.models['Pipeline']) await definePipelineApi()
+    if (!app.models['PipelineManagement']) await definePipelineManagementApi()
     if (!app.models['PipelineInst']) await definePipelineInstApi()
+
+    // Auto Update the instances in the database
+    let pipelineDs = app.datasources[options.instanceDataSource];
 
     await PipelineController.initialize(app)
     
@@ -22,9 +26,12 @@ module.exports = async function (app, options) {
         PipelineController.register(definition, (err) => {
             if (err) throw Error(err)
             LOG.info('Registered Pipeline Definition for Pipeline ' + definition.name)
+        }).catch(err => {
+            LOG.error('Error Registering Pipeline: ' + definition.name)
+            LOG.error(err)
         })
     }
-
+    
     function definePipelineApi() {
         return new Promise((resolve, reject) => {
             // Create a Model Constructor using the json definition
@@ -38,6 +45,19 @@ module.exports = async function (app, options) {
         })
     }
     
+    function definePipelineManagementApi() {
+        return new Promise((resolve, reject) => {
+            // Create a Model Constructor using the json definition
+            const PipelineManagementConstructor = app.registry.createModel(require('./lib/models/pipeline-management.json'))
+            // Create a Model from the Model Constructor
+            const pipelineManagement = app.model(PipelineManagementConstructor, { dataSource: null, public: true })
+            // Instantiate the Remote Model implementation
+            const pipelineManagementRemote = require('./lib/models/pipeline-management')(pipelineManagement)
+    
+            resolve(pipelineManagementRemote)
+        })
+    }
+
     function definePipelineInstApi() {
         return new Promise((resolve, reject) => {
             // Define the Pipeline Definition Data Model

@@ -1,0 +1,31 @@
+<div *ngFor="let row of pipelineDefRows" class="row">
+  <div *ngFor="let col of row" class="clr-col-4">
+    <div class="card">
+        <div class="card-header">
+          {{col.name}}
+        </div>
+        <div class="card-block">
+          <p class="card-title">{{col.description}}</p>
+          <p class="card-text"><strong>Bucket:</strong> {{col.bucket}}</p>
+          <p class="card-text"><strong>Mapper:</strong> {{col.mapper}}</p>
+          <p class="card-text"><strong>Steps: </strong></p>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="left">Model</th>
+                  <th class="left">Method</th>
+                  <th class="left">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let step of col.steps">
+                  <td class="left">{{step.model}}</td>
+                  <td class="left">{{step.method}}</td>
+                  <td class="left">{{step.description}}</td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+    </div>
+  </div>
+</div>
