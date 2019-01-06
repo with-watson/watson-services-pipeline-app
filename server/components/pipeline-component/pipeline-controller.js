@@ -558,15 +558,20 @@ PipelineController.prototype.getByPipelineState = function (state, startDt, endD
 
             if (this.instanceStore.getDataSource().connector.name === 'memory') {
 
-                this.instanceStore.find({ where: { state: state }}, (err, data) => {
+                this.instanceStore.count({ state: state }, (err, count) => {
+
                     if (err) return reject(err)
 
-                    let resp = {
-                        total_rows: data.length,
-                        rows: data
-                    }
-
-                    resolve(resp)
+                    this.instanceStore.find({ where: { state: state }, limit: limit, skip: skip, order: 'created DESC' }, (err, data) => {
+                        if (err) return reject(err)
+    
+                        let resp = {
+                            total_rows: count,
+                            rows: data
+                        }
+    
+                        resolve(resp)
+                    })    
                 })
 
             }
@@ -613,18 +618,60 @@ PipelineController.prototype.getPipelineDefinitions = function () {
 PipelineController.prototype.getFilesReadyToProcess = function (pipelineName, cosObjects) {
     return new Promise((resolve, reject) => {
 
-        let collection = this.instanceStore.getDataSource().connector.collection('PipelineInst')
+        if (this.instanceStore.getDataSource().connector.name === 'mongodb') {
+            let collection = this.instanceStore.getDataSource().connector.collection('PipelineInst')
 
-        // Find all the completed pipeline instances in the database and return only the filename
-        collection.find({ state: 'completed' }, { projection: { triggerFile: true }}, (err, results) => {
-            if (err) return reject(err)
+            // Find all the completed pipeline instances in the database and return only the filename
+            collection.find({ state: 'completed' }, { projection: { triggerFile: true }}, (err, results) => {
+                if (err) return reject(err)
 
-            results.toArray((err, resultsAsArray) => { 
+                results.toArray((err, resultsAsArray) => { 
+
+                    // Create a Hash from the files already processed
+                    let doneFiles = {}
+
+                    resultsAsArray.forEach(doc => {
+                        if (doc.triggerFile) {
+                            doneFiles[doc.triggerFile] = true
+                        }
+                    })
+                    let readyFiles = cosObjects.filter(cosFileName => {
+                        return doneFiles[cosFileName] ? false : true
+                    })
+                    resolve(readyFiles)
+
+                })
+
+            })
+        }
+
+        if (this.instanceStore.getDataSource().connector.name === 'cloudant') {
+            let params = {
+                startKey: [pipelineName, ''],
+                endKey: [pipelineName, 'z'],
+                inclusive_end: true
+            }
+            this.instanceStore.getDataSource().connector.viewDocs('pipeline-db-design', 'file-view', params, (err, results) => {
+                if (err) return reject(err)
 
                 // Create a Hash from the files already processed
                 let doneFiles = {}
+                results.rows.forEach(row => {
+                    doneFiles[row.value.fileName] = true
+                })
+                let readyFiles = cosObjects.filter(cosFileName => {
+                    return doneFiles[cosFileName] ? false : true
+                })
+                resolve(readyFiles)
+            })
+        }
 
-                resultsAsArray.forEach(doc => {
+        if (this.instanceStore.getDataSource().connector.name === 'memory') {
+            this.instanceStore.find({ state: 'completed' }, (err, data) => {
+                // Create a Hash from the files already processed
+                let doneFiles = {}
+
+                data.forEach(doc => {
                     if (doc.triggerFile) {
                         doneFiles[doc.triggerFile] = true
                     }
@@ -633,29 +680,8 @@ PipelineController.prototype.getFilesReadyToProcess = function (pipelineName, co
                     return doneFiles[cosFileName] ? false : true
                 })
                 resolve(readyFiles)
-
             })
-
-        })
-
-        // let params = {
-        //     startKey: [pipelineName, ''],
-        //     endKey: [pipelineName, 'z'],
-        //     inclusive_end: true
-        // }
-        // this.instanceStore.getDataSource().connector.viewDocs('pipeline-db-design', 'file-view', params, (err, results) => {
-        //     if (err) return reject(err)
-
-        //     // Create a Hash from the files already processed
-        //     let doneFiles = {}
-        //     results.rows.forEach(row => {
-        //         doneFiles[row.value.fileName] = true
-        //     })
-        //     let readyFiles = cosObjects.filter(cosFileName => {
-        //         return doneFiles[cosFileName] ? false : true
-        //     })
-        //     resolve(readyFiles)
-        // })
+        }
     })
 }
 

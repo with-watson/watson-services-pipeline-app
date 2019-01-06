@@ -25,6 +25,19 @@ A Pipeline framework based on Node.js and Loopback.  This implementation is base
 8. The Post function is called on the Mapper model to save the results of the service call to the Pipeline Context object.
 9. The Pipeline continues on to the next defined step and the process starts all over.
 
+The Pipeline Context is a json object that contains all the data for a specific pipeline instance.  The pipeline runtime will construct and maintain the context during the lifetime of the pipeline instance. The pipeline context consist of some standard values;
+
+| Field | Description |
+|-------|-------------|
+| id | The unique id of the pipeline instance. |
+| state | The state of the pipeline with possible values of `created`, `initialized`, `active`, `completed`, `failed` |
+| created | A timestamp in ISO format of when the pipeline instance was created |
+| history | An array of history entries for this particular pipeline instance |
+| ended | A timestamp in ISO format when the pipeline completed |
+| error | An error message if the pipeline failed |
+
+You would also save the results of the pipeline steps into the context using the Post step function.
+
 ## Pipeline Configuration
 
 The Pipeline is also a Loopback Component.  The Pipeline Component is already defined in the `server/component-config.json` file.  Use the example pipeline to create your own.
@@ -78,6 +91,26 @@ Use the Loopback Explorer to test out your models.
 ### Define the pipeline
 
 Edit the `server/component-config.json` file and add a new pipeline definition to `pipelines` array.  Follow the specs above.
+
+### Define the Pre step functions
+
+The Pre step function is where you would map the arguments required in the service call from the pipeline context to an array.
+
+You have 2 choices here.
+
+1. Use the mapper script (defined in the pipeline definition) to define a function that will map the required service arguments to an array.  The pipeline runtime will call this function with the pipeline context data.  The function name is derived from the Loopback model name and the model function used in the step.  For example, if you call a function `classify` on a model called `WatsonNLC` then the pre mapper function will be `watsonNLCClassify`.
+2. Or, In the pipeline definition json, specify a field called `callServiceWithParams` with an array of the values to pass to the service call.  The Pipeline runtime will then extract the values from the pipeline context and populate the array with the actual values.  For example, if you have a service call that require 2 fields, the pipeline id and a file name that the pipeline was triggerred with, the you would specify the value to be ['id', 'triggerFileName'].  You can also use dot notation to specifify nested fields. Arrays are not yet supported.
+
+In both cases, the ID of the pipeline instance must be part of the parameters as you need that to make the notification call back to the pipeline runtime when the service completes.
+
+### Define the Post step function
+
+The Post function is used to map the results passed back from the service call into the pipeline context.
+
+You have 2 choices here as well.
+
+1.  Use the mapper script (defined in the pipeline definition) to define a function that will map the results of the service call to the pipeline context.  The pipeline runtime will call this function with the pipeline context data and the results of the service call.   The function name is derived from the Loopback model name and the model function used in the step prepended with `post`.  For example, if you call a function `classify` on a model called `WatsonNLC` then the pre mapper function will be `postWatsonNLCClassify`.
+2. Or, In the pipeline definition json, specify a field called `saveResultsIn` with a field name where you would like to save the results of the service call to in the pipeline context.
 
 # Setting up IBM Cloud
 

@@ -12,7 +12,7 @@ const LOG = require('../utils/logger.js')
 module.exports = function(PipelineMapper) {
 
     // Map some data in the trigger to the context.
-    PipelineMapper.postSimpleTrigger = function (result, context, idx) {
+    PipelineMapper.postPipelineSimpleTrigger = function (result, context, idx) {
         return context
     }
 
