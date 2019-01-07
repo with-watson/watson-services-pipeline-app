@@ -61,7 +61,7 @@ module.exports = function(PipelineMapper) {
     // Basic async pre call mapper function
     PipelineMapper.PipelineSvcExampleAsyncCall = function (context) {
         return [
-            context
+            context.id
         ]
     }
 

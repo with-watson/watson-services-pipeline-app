@@ -88,6 +88,16 @@ Follow the example service to implement some of the design patterns like sync, a
 
 Use the Loopback Explorer to test out your models.
 
+The model function that is called from the pipeline must have some characteristics to receive information and interact with the pipeline runtime.  When the pipeline runtime calls a service method, after the Pre function is executed, the pipeline runtime will automatically add a callback to the list of arguments to conform to the loopback remote method implementation.  The other required value to pass into a model function is the pipeline id value that you can get from the context.id field.
+
+Once the model function receives the request, make an immediate call to the passed in callback function that should look something like this `cb(null, { 'status': 'ok', 'id': id })`.  This indicates to the pipeline runtime that the service is now executing its logic.
+
+When the service method is done with its processing and the results are availabile, use the `PipelineController.notify(id, results)` function to notify the pipeline runtime that the results are now available and the Post function can be executed.
+
+You also have an option to call the `PipelineController.notifyOfError(id, err)` function to tell the pipeline runtime that there was some error and the execution of the pipeline instance must stop.
+
+In some cases you would want an external service to call the Notify REST endpoint to actually tell the pipeline runtime to continue processing.  To do that, you can use the `PipelineHelper.getCallbackToken` to retrieve an access token that can be used to construct a callback url to pass to the external service.
+
 ### Define the pipeline
 
 Edit the `server/component-config.json` file and add a new pipeline definition to `pipelines` array.  Follow the specs above.

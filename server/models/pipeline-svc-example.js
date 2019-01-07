@@ -3,7 +3,6 @@
 const LOG = require('../utils/logger.js')
 
 const request = require('request')
-
 // The Pipeline Controller is used to interact with the pipeline runtime
 const PipelineController = require('../components/pipeline-component/pipeline-controller')
 // The pipeline helper is a utility module that contains helper functions for interacting with the pipeline
@@ -18,7 +17,7 @@ module.exports = function(PipelineExample) {
 
         setTimeout(() => {
             // Use the PipelineController to notify the pipeline of the response.
-            PipelineController.notify(id, { 'field': 'value' }).then()
+            PipelineController.notify(id, { 'field': 'value' })
         }, 2000)
     }
 
@@ -26,11 +25,12 @@ module.exports = function(PipelineExample) {
     PipelineExample.processArrayValue = function (value, idx, id, cb) {
         cb(null, { 'status': 'ok' , 'id': id })
 
-        LOG.info('In processArrayValue ', value, idx, id )
+        LOG.info('In processArrayValue %n with index %n and pipeline instance id %s', value, idx, id )
+
         let val = value * 100
 
         // Use the PipelineController to notify the pipeline of the response.
-        PipelineController.notify(id, { 'value': val }).then()
+        PipelineController.notify(id, { 'value': val })
     }
 
     // This is an example of s service method that returns an array of values.
@@ -40,14 +40,14 @@ module.exports = function(PipelineExample) {
         for (let i=0; i<10; i++) {
             numbers.push(Math.random())
         }
-        PipelineController.notify(id, { values: numbers }).then()
+        PipelineController.notify(id, { values: numbers })
     }
 
     // This is an example of an async service methop.  This does a callback back to the pipeline
     // once the work is complete.
-    PipelineExample.asyncCall = function (context, cb) {
+    PipelineExample.asyncCall = function (id, cb) {
 
-        cb(null, { 'status': 'ok', 'id': context.id })
+        cb(null, { 'status': 'ok', 'id': id })
 
         // Use the Pipeline Helper to retrieve the token for the callback.
         pipelineHelper.getCallbackToken((err, token) => {
@@ -59,7 +59,7 @@ module.exports = function(PipelineExample) {
                 let opts = {
                     url: callbackUrl,
                     body: {
-                        id: context.id,
+                        id: id,
                         results: {
                             "field": "value"
                         }
