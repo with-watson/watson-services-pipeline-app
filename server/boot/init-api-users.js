@@ -24,13 +24,13 @@ module.exports = function (app, done) {
     // Create all the Users
     for (let user of defaultUsers) {
       await checkAndCreateUser(user).then(checkedUser => {
-        LOG.info(checkedUser.username + ' - User OK')
+        LOG.verbose('InitApiUser > ' + checkedUser.username + ' - User OK')
       })
     }
     // Create all the Roles
     for (let role of defaultRoles) {
       await checkAndCreateRole(role).then(checkedRole => {
-        LOG.info(checkedRole.name + ' - Role OK')
+        LOG.verbose('InitApiUser > ' + checkedRole.name + ' - Role OK')
       })
     }
     // Add the Users to the specified Roles.
@@ -38,7 +38,7 @@ module.exports = function (app, done) {
       if (user.roles && user.roles.length > 0) {
         for (let userRole of user.roles) {
           await checkAndCreatePrincipal(userRole, user.username).then(checkPrincipals => {
-            LOG.info('User ' + user.username + ' is part of Role ' + userRole + ' - OK')
+            LOG.verbose('InitApiUser > User ' + user.username + ' is part of Role ' + userRole + ' - OK')
           })
         }
       }
@@ -62,7 +62,7 @@ module.exports = function (app, done) {
                   if (err) {
                     LOG.error(err)
                   } else {
-                    LOG.warn('Removing expired token for user.')
+                    LOG.warn('InitApiUser > Removing expired token for user.')
                   }
                 })
               }
@@ -103,7 +103,7 @@ module.exports = function (app, done) {
           if (err) {
             reject(err)
           } else {
-            LOG.debug('A new API User was created with username: ' + user.username)
+            LOG.debug('InitApiUser > A new API User was created with username: ' + user.username)
             resolve(created)
           }
         })
@@ -140,7 +140,7 @@ module.exports = function (app, done) {
           if (err) {
             reject(err)
           } else {
-            LOG.debug('A new Role was created: ' + role.name)
+            LOG.debug('InitApiUser > A new Role was created: ' + role.name)
             resolve(created)
           }
         })
@@ -184,7 +184,7 @@ module.exports = function (app, done) {
   function createPrincipal (role, userId) {
     try {
       return new Promise((resolve, reject) => {
-        LOG.debug('Adding user with ID ' + userId + ' to Role ' + role.name)
+        LOG.debug('InitApiUser > Adding user with ID ' + userId + ' to Role ' + role.name)
         role.principals.create({ principalType: RoleMapping.USER, principalId: userId }, (err, created) => {
           if (err) {
             reject(err)

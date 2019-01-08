@@ -33,14 +33,14 @@ module.exports = function(PipelineMapper) {
 
     // This is an example of an `until` function.
     PipelineMapper.allValuesProcessed = function (context, idx) {
-        LOG.info('Checking if ' + idx + ' >= ' + context.array_values.length)
+        LOG.silly('PipelineMapper > Checking if ' + idx + ' >= ' + context.array_values.length)
         return idx >= context.array_values.length
     }
 
     // Pre call function of a service that processes an array of values.
     PipelineMapper.PipelineSvcExampleProcessArrayValue = function (context) {
 
-        LOG.info('PipelineSvcExampleProcessArrayValue', context.active.forloop_index, context.array_values[context.active.forloop_index])
+        LOG.silly('PipelineMapper > PipelineSvcExampleProcessArrayValue %d %s', context.active.forloop_index, context.array_values[context.active.forloop_index])
 
         return [
             context.array_values[context.active.forloop_index],

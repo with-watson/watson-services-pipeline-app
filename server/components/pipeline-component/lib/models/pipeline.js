@@ -165,7 +165,10 @@ module.exports = function (Pipeline) {
 
     Pipeline.resume = function (resumeData, cb) {
 
-        LOG.debug('Pipeline REST Api resumed Pipeline instance: ', resumeData.id)
+        if (!resumeData.id) return cb('Pipeline Id (id) value must be supplied.')
+        if (!resumeData.from) return cb('From (from) what step in form [model].[method].[index] must be supplied.')
+
+        LOG.debug('Pipeline REST Api resumed Pipeline instance %s from %s ', resumeData.id, resumeData.from)
 
         PipelineController.resume(resumeData).then((act) => {
             LOG.debug('Pipeline REST Api resumed the Pipeline Controller and received acknowedgement back. %o', act)

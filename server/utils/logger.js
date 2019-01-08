@@ -1,4 +1,4 @@
-'us strict'
+'use strict'
 
 const winston = require('winston')
 
@@ -6,7 +6,7 @@ const console = new winston.transports.Console()
 
 const DEFAULT_LEVEL = 'debug'
 
-var logger = function(level) {
+var logger = function() {
 
     const customFormat = winston.format.printf(log => {
         return `${log.timestamp} ${log.level}: ${log.message}`;
@@ -20,8 +20,16 @@ var logger = function(level) {
             customFormat
         ),
         transports: console,
-        level: level ? level : DEFAULT_LEVEL
+        level: DEFAULT_LEVEL
     })    
+}
+
+logger.prototype.setLevel = function (level) {
+    this.LOG.level = level
+}
+
+logger.prototype.log = function (level, msg, ...args) {
+    this.LOG.log(level, msg, ...args)
 }
 
 logger.prototype.error = function (msg, ...args) {

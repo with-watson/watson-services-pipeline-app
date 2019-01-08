@@ -5,9 +5,11 @@ const PipelineController = require('./pipeline-controller')
 
 module.exports = async function (app, options) {
     // Validate that the data connections are defined.
-    if (!app.models[options.componentStorageModel]) {
-        throw Error('Component Storage Model is not defined: ' + options.componentStorageModel)
+    if (!options.componentStorageModel || !app.models[options.componentStorageModel]) {
+        LOG.warn('PipelineComponent > Component Storage Model is not defined.  This means no Cloud Object Storage access will be available.')
     }
+    // The Instance Datasource should be defined in the datasources.json file as a Loopback supported DS.
+    // It will be connected to the PipelineInst model and used for persisting the Pipeline Instance data to.
     if (!app.dataSources[options.instanceDataSource]) {
         throw Error('Instance Datasource is not defined: ' + options.instanceDataSource)
     }
@@ -16,16 +18,14 @@ module.exports = async function (app, options) {
     if (!app.models['PipelineManagement']) await definePipelineManagementApi()
     if (!app.models['PipelineInst']) await definePipelineInstApi()
 
-    // Auto Update the instances in the database
-    let pipelineDs = app.datasources[options.instanceDataSource];
-
+    // Initialize the Pipeline Controller
     await PipelineController.initialize(app)
     
     // Run through the passed in Pipeline Definitions and register them with the controller
     for (let definition of options.pipelines) {
         PipelineController.register(definition, (err) => {
             if (err) throw Error(err)
-            LOG.info('Registered Pipeline Definition for Pipeline ' + definition.name)
+            LOG.info('PipelineComponent > Registered Pipeline Definition for Pipeline ' + definition.name)
         }).catch(err => {
             LOG.error('Error Registering Pipeline: ' + definition.name)
             LOG.error(err)
@@ -41,6 +41,8 @@ module.exports = async function (app, options) {
             // Instantiate the Remote Model implementation
             const pipelineRemote = require('./lib/models/pipeline')(pipeline)
     
+            LOG.debug('PipelineComponent > Pipeline REST Api Configured.')
+
             resolve(pipelineRemote)
         })
     }
@@ -54,6 +56,8 @@ module.exports = async function (app, options) {
             // Instantiate the Remote Model implementation
             const pipelineManagementRemote = require('./lib/models/pipeline-management')(pipelineManagement)
     
+            LOG.debug('PipelineComponent > Pipeline Management REST Api Configured.')
+
             resolve(pipelineManagementRemote)
         })
     }
@@ -67,6 +71,8 @@ module.exports = async function (app, options) {
     
             const pipelineInstRemote = require('./lib/models/pipeline-inst')(pipelineInst)  
             
+            LOG.debug('PipelineComponent > PipelineInst Persistant Model Configured.')
+
             resolve(pipelineInstRemote)
         })
     }

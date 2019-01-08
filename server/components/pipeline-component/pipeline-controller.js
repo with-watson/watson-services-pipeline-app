@@ -23,12 +23,12 @@ PipelineController.prototype.initialize = function (_app) {
 
         this.instanceStore = this.app.models['PipelineInst']
 
-        if (!this.instanceStore) throw Error('No Pipeline instance store defined.')
+        if (!this.instanceStore) throw Error('PipelineController > No Pipeline instance store defined.')
 
         this.definitionCache = {}
         this.instanceCache = {}
 
-        LOG.debug('Pipeline Controller initialized.')
+        LOG.verbose('PipelineController > Successfully Initialized.')
 
         resolve()
     })
@@ -40,16 +40,27 @@ PipelineController.prototype.register = function (definition) {
 
         if (err) return reject(err)
 
-        // Check if the bucket is created for COS otherwise create it
-        cosUtils.bucketExist(definition.bucket, true, (err) => {
-            if (err) return reject(err)
+        if (definition.bucket) {
+            // Check if the bucket is created for COS otherwise create it
+            cosUtils.bucketExist(definition.bucket, true, (err) => {
+                if (err) return reject(err)
 
+                this.definitionCache[definition.name] = definition
+
+                LOG.debug('PipelineController > Pipeline definition %s registered.', definition.name)
+
+                resolve()
+            })
+        } else {
+            LOG.warn('PipelineController > Pipeline Definition %s does not have a Cloud Object Storage Bucket assigned to it.', definition.name)
+    
             this.definitionCache[definition.name] = definition
 
-            LOG.debug('%s Pipeline Controller registed a definition.', definition.name)
+            LOG.debug('PipelineController > Pipeline definition %s registed.', definition.name)
 
             resolve()
-        })
+        }
+
     })
 }
 
@@ -57,8 +68,10 @@ PipelineController.prototype.register = function (definition) {
 PipelineController.prototype.trigger = function (triggerReq) {
     return new Promise(async (resolve, reject) => {
         try {
+            LOG.debug('PipelineController > Pipeline %s Trigger.', triggerReq.pipelineName)
+
             if (!this.definitionCache[triggerReq.pipelineName]) {
-                return reject('Pipeline name does not resolve to a pipeline definition.')
+                return reject('PipelineController > Pipeline name does not resolve to a pipeline definition.')
             }
             // Create a new instance of the pipeline
             let pipelineInstance = new PipelineImpl(this.app, this.definitionCache[triggerReq.pipelineName])
@@ -67,18 +80,19 @@ PipelineController.prototype.trigger = function (triggerReq) {
 
             this.instanceCache[act.id] = pipelineInstance
 
+            LOG.verbose('PipelineController > %s %s Instance triggered.', triggerReq.pipelineName, act.id)
+
             // Trigger the pipeline instance to start the step execution
             act = await pipelineInstance.trigger(triggerReq)
 
             // Emit the trigger event
             this.emit('trigger', pipelineInstance.context)
 
-            LOG.debug('%s %s Pipeline Controller was triggered and produced instance.', triggerReq.pipelineName, act.id)
-
             // If the pipeline is done, then complete the instance
             if (pipelineInstance.done) {
-                await this.complete(act.id)
-                LOG.debug('%s %s Pipeline Controller completes pipeline in trigger function for instance.', triggerData.pipelineName, act.id)
+                await this.complete(act.id).catch(err => {
+                    reject(err)
+                })
             }
 
             resolve(act)
@@ -93,11 +107,11 @@ PipelineController.prototype.trigger = function (triggerReq) {
 PipelineController.prototype.notify = async function (id, results) {
     try {
 
-        LOG.debug('PipelineController.notify')
+        LOG.debug('PipelineController > Notify.')
 
         if (this.mode === 'TEST') {
 
-            LOG.info('PipelineController is in TEST mode and will end here.')
+            LOG.warn('PipelineController > PipelineController is in TEST mode and will end here.')
 
             this.mode === 'PROD'
 
@@ -107,26 +121,25 @@ PipelineController.prototype.notify = async function (id, results) {
         let pipelineInstance = await this.retrieveInstance(id)
         
         if (!pipelineInstance) {
-            throw new Error('Pipeline instance ' + id + ' not found.')
+            throw new Error('PipelineController > Pipeline instance ' + id + ' not found.')
         }
         if (!pipelineInstance.context.state === 'failed' || pipelineInstance.context.state === 'completed') {
-            throw new Error('Pipeline instance ' + id + ' is in ' + pipelineInstance.state + ' state and cannot be notified.')
+            throw new Error('PipelineController > Pipeline instance ' + id + ' is in ' + pipelineInstance.context.state + ' state and cannot be notified.')
         }
 
         this.emit('notify', pipelineInstance.context)
+
+        LOG.verbose('PipelineController > %s %s Instance Notified.', pipelineInstance.context.pipelineName, pipelineInstance.context.id)
 
         // Call the active pipeline instance
         let act = await pipelineInstance.notify(results).catch(err => {
             throw new Error(err)
         })
 
-        LOG.debug('%s %s Pipeline Controller notified instance.', pipelineInstance.context.pipelineName, pipelineInstance.context.id)
-
         if (pipelineInstance.done) {
             await this.complete(act.id).catch(err => {
                 reject(err)
             })
-            LOG.debug('%s %s Pipeline Controller completes pipeline in notification function for instance.', pipelineInstance.context.pipelineName, pipelineInstance.context.id)
         }
 
 
@@ -141,16 +154,16 @@ PipelineController.prototype.notifyOfError = async function (id, err) {
 
     try {
 
-        LOG.warn('PipelineController.notifyOfError > %o', err)
+        LOG.debug('PipelineController > NotifyOfError: %o', err)
 
         let pipelineInstance = await this.retrieveInstance(id)
 
         if (!pipelineInstance) {
-            LOG.warn('Pipeline instance ' + id + ' not found.')
+            LOG.warn('PipelineController > Pipeline instance ' + id + ' not found.')
             return
         }
         if (!pipelineInstance.context.state === 'failed' || pipelineInstance.context.state === 'completed') {
-            LOG.warn('Pipeline instance ' + id + ' is in ' + pipelineInstance.state + ' state and cannot be notified.')
+            LOG.warn('PipelineController > Pipeline instance ' + id + ' is in ' + pipelineInstance.state + ' state and cannot be notified.')
             return
         }
 
@@ -185,10 +198,9 @@ PipelineController.prototype.resume = function (resumeData) {
 
             if (pipelineInstance.done) {
                 await this.complete(act.id)
-                LOG.debug('%s %s Pipeline Controller completes pipeline in resume function for instance.', pipelineInstance.context.pipelineName, pipelineInstance.context.id)
             }
 
-            LOG.debug('%s %s Pipeline Controller resumed instance.', pipelineInstance.context.pipelineName, pipelineInstance.context.id)
+            LOG.debug('PipelineController > %s %s Pipeline Controller resumed instance.', pipelineInstance.context.pipelineName, pipelineInstance.context.id)
 
         } catch (err) {
             LOG.error('PipelineController.resume > ', err)
@@ -233,6 +245,8 @@ PipelineController.prototype.complete = function (id) {
 
         delete this.instanceCache[id]
 
+        LOG.debug('PipelineController > Instance Cache now contains %d instances.', Object.keys(this.instanceCache).length)
+
         resolve()
     })
 }
@@ -242,10 +256,10 @@ PipelineController.prototype.retrieveInstance = function (id) {
         try {
             // Check the cache and if return it if found
             if (this.instanceCache[id]) {
-                LOG.debug('Instance %s was found in the cache.', id)
+                LOG.debug('PipelineController > Instance %s was found in the cache.', id)
                 return resolve(this.instanceCache[id])
             }
-            LOG.warn('%s Pipeline instance is being retrieved from the instance datasource.', id)
+            LOG.warn('PipelineController > %s Pipeline instance is being retrieved from the instance datasource.', id)
             // Otherwise, check the database for the instance
             this.instanceStore.findById(id, async (err, existing) => {
                 if (err) {
@@ -307,7 +321,7 @@ PipelineController.prototype.findById = function (id) {
 PipelineController.prototype.destroyById = function (id) {
     return new Promise((resolve, reject) => {
         try {
-            LOG.info('Deleting instance %s', id)
+            LOG.info('PipelineController > Deleting instance %s', id)
             this.instanceStore.destroyById(id, (err) => {
                 if (err) return reject(err)
                 resolve()
@@ -687,7 +701,7 @@ PipelineController.prototype.getFilesReadyToProcess = function (pipelineName, co
 
 function validateDefinition(_app, definition) {
     if (!definition.name) return 'Pipeline Definition name missing.'
-    if (!definition.bucket) return 'Cloud Object Storage container/bucket name missing.'
+    if (!definition.bucket) LOG.warn('Cloud Object Storage container/bucket name missing.')
     if (!definition.steps || definition.steps.length === 0) return 'Steps are required for a pipeline to function.'
 
     if (!definition.mapper) return 'Pipeline mapper models is required.'
@@ -709,7 +723,7 @@ function validateDefinition(_app, definition) {
         }
         i++
     }
-    LOG.debug('Definition ' + definition.name + ' validated successfully...')
+    LOG.info('PipelineController > Definition ' + definition.name + ' validated successfully...')
 }
 
 module.exports = new PipelineController()

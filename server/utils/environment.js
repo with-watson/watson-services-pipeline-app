@@ -7,7 +7,6 @@ const LOG = require('./logger')
 
 const VCAP_LOCAL_JSON_FILE = './vcap-local.json'
 const ENV_VARS_JSON_FILE = './env-vars.json'
-const INIT_LOG_LEVEL = 'debug'
 
 let appEnv
 
@@ -15,14 +14,12 @@ module.exports = function () {
     
     let vcapLocalDefault = {}
     let envVarsDefault = {
-        LOG_LEVEL: 'debug'
+        LOG_LEVEL: 'silly'
     }
-
-    LOG.silly('Initializing the Environment')
 
     // If running locally, load the VCAP from the vcap-local.json file.
     if (isLocal) {
-        LOG.debug('App is executing locally...')
+        LOG.debug('Environment > App is executing locally...')
         // Read the local config files
         var vcapLocalJson = readConfigFile(VCAP_LOCAL_JSON_FILE)
         if (!vcapLocalJson) {
@@ -35,7 +32,7 @@ module.exports = function () {
         // Set the appEnv for everything to use
         appEnv = cfenv.getAppEnv(envOptions)
 
-        LOG.debug('VCAP environment successfully created from local config file...')
+        LOG.debug('Environment > VCAP environment successfully created from local config file...')
     } else {
         // Let cfenv handle loading the VCAP
         appEnv = cfenv.getAppEnv()
@@ -46,12 +43,13 @@ module.exports = function () {
     }
     resolveEnvironmentFromVcap(envVarsLocalJson)
 
-    LOG.silly('Environment successfully configured.')
+    LOG.silly('Environment > Environment successfully configured.')
     
     // Update the log level to the level defined in the env-var.json file.
     if (process.env.LOG_LEVEL) {
-        LOG.info('Log level is set to ' + (process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'silly') + ', it can be changed as an environment variable.')        
-        LOG.level = process.env.LOG_LEVEL
+        LOG.info('Environment > Log level is set to ' + (process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'silly') + ', it can be changed as an environment variable.')        
+        LOG.setLevel(process.env.LOG_LEVEL)
+        LOG.log(process.env.LOG_LEVEL, 'Environment > Testing the log level out...')
     }
     
     return {
@@ -64,7 +62,7 @@ module.exports = function () {
 function resolveEnvironmentFromVcap(envVarsLocalJson) {
     // Loop over the defined fields in the local-env.json file
     for (var valName in envVarsLocalJson) {
-        LOG.debug('Resolving environment variable ' + valName)
+        LOG.debug('Environment > Resolving environment variable ' + valName)
         // If it's an object, it indicates that we need to extract it from vcap
         if (typeof envVarsLocalJson[valName] === 'object' && !Array.isArray(envVarsLocalJson[valName])) {
             handleExpressionVariable(valName, envVarsLocalJson[valName])
@@ -83,7 +81,7 @@ function resolveEnvironmentFromVcap(envVarsLocalJson) {
 function handleBasicVariables(valName, envVarsLocalJson) {
     // Prefer to get literal values from appEnv otherwise default to value in the env-vars.json file
     if (process.env[valName]) {
-        LOG.debug('Found an expression variable ' + valName + ' in the environment, using it.')
+        LOG.debug('Environment > Found an expression variable ' + valName + ' in the environment, using it.')
         return
     }
     process.env[valName] = envVarsLocalJson[valName]
@@ -91,7 +89,7 @@ function handleBasicVariables(valName, envVarsLocalJson) {
 
 function handleArrayVariable(valName, envVarsLocalJson) {
     if (process.env[valName]) {
-        LOG.debug('Found an expression variable ' + valName + ' in the environment, using it.')
+        LOG.debug('Environment > Found an expression variable ' + valName + ' in the environment, using it.')
         return
     }
     process.env[valName] = JSON.stringify(envVarsLocalJson[valName])
@@ -100,7 +98,7 @@ function handleArrayVariable(valName, envVarsLocalJson) {
 function handleExpressionVariable(valName, expressionVar) {
     // If there is an environment variable set with this valName, use that above anything else.
     if (process.env[valName]) {
-        LOG.debug('Found an expression variable ' + valName + ' in the environment, using it.')
+        LOG.debug('Environment > Found an expression variable ' + valName + ' in the environment, using it.')
         return
     }
     var expr = expressionVar.expr
@@ -156,12 +154,12 @@ function readConfigFile(filename) {
         if (fs.existsSync(filename)) {
             parsedJSON = JSON.parse(fs.readFileSync(filename, 'utf8'))
         } else {
-            LOG.warn('There don\'t seem to be a ' + filename + ' available.')
+            LOG.warn('Environment > There don\'t seem to be a ' + filename + ' available.')
             return null
         }
         return parsedJSON
     } catch (err) {
-        LOG.warn('There seem to be a problem reading file ' + filename + '.')
+        LOG.warn('Environment > There seem to be a problem reading file ' + filename + '.')
         return null
     }
 }

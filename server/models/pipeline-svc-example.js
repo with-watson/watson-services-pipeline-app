@@ -25,8 +25,6 @@ module.exports = function(PipelineExample) {
     PipelineExample.processArrayValue = function (value, idx, id, cb) {
         cb(null, { 'status': 'ok' , 'id': id })
 
-        LOG.info('In processArrayValue %n with index %n and pipeline instance id %s', value, idx, id )
-
         let val = value * 100
 
         // Use the PipelineController to notify the pipeline of the response.
@@ -69,7 +67,6 @@ module.exports = function(PipelineExample) {
                 // Send the notification back to the pipeline.
                 request.post(opts, (err, response, body) => {
                     if (err) return LOG.error(err)
-                    LOG.info('Pipeline Example Service was acknowledged.', body)
                 })
             }, 5000)
         })

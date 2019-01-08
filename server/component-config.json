@@ -3,13 +3,13 @@
     "mountPath": "/explorer"
   },
   "./components/pipeline-component/pipeline-component.js": {
-    "componentStorageModel": "IbmCos",
     "instanceDataSource": "pipeline-db",
+    "componentStorageModel": "IbmCos",
     "pipelines": [
       {
         "name": "example-pipeline",
-        "bucket": "watson-service-pipeline-example",
         "mapper": "PipelineMapper",
+        "bucket": "watson-service-pipeline-example",
         "steps": [
           {
             "description": "simple trigger",
