@@ -36,14 +36,14 @@
     "multer": "^1.4.1",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^3.2.0",
-    "watson-developer-cloud": "^3.13.0",
+    "watson-developer-cloud": "^4.0.1",
     "winston": "^3.1.0"
   },
   "devDependencies": {
     "browser-sync": "^2.26.3",
-    "concurrently": "^3.6.1",
-    "eslint": "^3.19.0",
-    "eslint-config-loopback": "^8.0.0",
+    "concurrently": "^4.1.0",
+    "eslint": "^5.16.0",
+    "eslint-config-loopback": "^13.1.0",
     "path-exists-cli": "^1.0.0"
   },
   "repository": {

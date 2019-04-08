@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 import { NgModule } from '@angular/core';
-import { ClarityModule, ClrFormsNextModule } from '@clr/angular'
+import { ClarityModule } from '@clr/angular'
 
 import { FormsModule, ReactiveFormsModule }   from '@angular/forms';
 
@@ -43,7 +43,6 @@ import { ChangePasswordComponent } from './auth/change-password/change-password.
     AuthModule,
     AppRoutingModule,
     ClarityModule,
-    ClrFormsNextModule,
     NgxJsonViewerModule
   ],
   providers: [ ],
